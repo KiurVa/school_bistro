@@ -14,11 +14,11 @@ return new class extends Migration
         Schema::create('menu_items', function (Blueprint $table) {
             $table->id();
             $table->foreignId('menu_id')
-                  ->constrained('menus')
-                  ->onDelete('cascade');
+                ->constrained('menus')
+                ->onDelete('cascade');
             $table->foreignId('category_id')
-                  ->constrained('categories')
-                  ->onDelete('cascade');
+                ->constrained('categories')
+                ->onDelete('cascade');
             $table->string('name');
             $table->decimal('full_price', 8, 2);
             $table->decimal('half_price', 8, 2)->nullable();
@@ -28,6 +28,10 @@ return new class extends Migration
             $table->boolean('is_available')->default(true);
             $table->integer('order_index')->default(0);
             $table->timestamps();
+            $table->softDeletes();
+
+            $table->index(['menu_id', 'category_id', 'order_index']);
+            $table->index('name');
         });
     }
 

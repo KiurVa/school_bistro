@@ -15,20 +15,19 @@ class CategorySeeder extends Seeder
     {
         // Lõunamenüü kategooriad (menu_type_id = 1)
         $lounaCategories = [
-            ['name' => 'Koolilõuna', 'color' => '#FF4242', 'order' => 1],
-            ['name' => 'Supid', 'color' => null, 'order' => 2],
-            ['name' => 'Praed', 'color' => null, 'order' => 3],
-            ['name' => 'Lisandid', 'color' => null, 'order' => 4],
-            ['name' => 'Kastmed', 'color' => null, 'order' => 5],
-            ['name' => 'Salatid', 'color' => null, 'order' => 6],
-            ['name' => 'Magustoidud', 'color' => null, 'order' => 7],
+            ['name' => 'Koolilõuna', 'order' => 10],
+            ['name' => 'Supid', 'order' => 20],
+            ['name' => 'Praed', 'order' => 30],
+            ['name' => 'Lisandid', 'order' => 40],
+            ['name' => 'Kastmed', 'order' => 50],
+            ['name' => 'Salatid', 'order' => 60],
+            ['name' => 'Magustoidud', 'order' => 70],
         ];
 
         foreach ($lounaCategories as $cat) {
             DB::table('categories')->insert([
                 'menu_type_id' => 1,
                 'name' => $cat['name'],
-                'color' => $cat['color'],
                 'order_index' => $cat['order'],
                 'created_at' => now(),
                 'updated_at' => now(),
@@ -39,7 +38,6 @@ class CategorySeeder extends Seeder
         DB::table('categories')->insert([
             'menu_type_id' => 2,
             'name' => 'Hommikutoidud',
-            'color' => null,
             'order_index' => 1,
             'created_at' => now(),
             'updated_at' => now(),
@@ -47,16 +45,15 @@ class CategorySeeder extends Seeder
 
         // Laagrimenüü kategooriad (menu_type_id = 3)
         $laagerCategories = [
-            ['name' => 'Hommikusöök', 'order' => 1],
-            ['name' => 'Lõunasöök', 'order' => 2],
-            ['name' => 'Õhtusöök', 'order' => 3],
+            ['name' => 'Hommikusöök', 'order' => 10],
+            ['name' => 'Lõunasöök', 'order' => 20],
+            ['name' => 'Õhtusöök', 'order' => 30],
         ];
 
         foreach ($laagerCategories as $cat) {
             DB::table('categories')->insert([
                 'menu_type_id' => 3,
                 'name' => $cat['name'],
-                'color' => null,
                 'order_index' => $cat['order'],
                 'created_at' => now(),
                 'updated_at' => now(),
@@ -67,7 +64,6 @@ class CategorySeeder extends Seeder
         DB::table('categories')->insert([
             'menu_type_id' => 4,
             'name' => 'Ürituse road',
-            'color' => null,
             'order_index' => 1,
             'created_at' => now(),
             'updated_at' => now(),

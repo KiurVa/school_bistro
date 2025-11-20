@@ -14,8 +14,8 @@ return new class extends Migration
         Schema::create('menus', function (Blueprint $table) {
             $table->id();
             $table->foreignId('menu_type_id')
-                  ->constrained('menu_types')
-                  ->onDelete('cascade');
+                ->constrained('menu_types')
+                ->onDelete('cascade');
             $table->date('date');
             $table->string('header_line1')->nullable();
             $table->string('header_line2')->nullable();
@@ -23,9 +23,12 @@ return new class extends Migration
             $table->string('background_image')->nullable();
             $table->boolean('is_visible')->default(true);
             $table->timestamps();
+            $table->softDeletes();
 
             // Üks menüütüüp päevas ainult üks kord
             $table->unique(['menu_type_id', 'date']);
+            $table->index(['date', 'is_visible']);
+            $table->index('menu_type_id');
         });
     }
 

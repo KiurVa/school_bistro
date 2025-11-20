@@ -14,12 +14,16 @@ return new class extends Migration
         Schema::create('categories', function (Blueprint $table) {
             $table->id();
             $table->foreignId('menu_type_id')
-                  ->constrained('menu_types')
-                  ->onDelete('cascade');
+                ->constrained('menu_types')
+                ->onDelete('cascade');
             $table->string('name'); // Supid, Praed, Hommikusöök
-            $table->string('color')->nullable(); // #FF4242
             $table->integer('order_index')->default(0);
+            $table->boolean('is_visible')->default(true);
             $table->timestamps();
+            $table->softDeletes();
+
+            $table->index(['menu_type_id', 'order_index']);
+            $table->index('is_visible');
         });
     }
 
