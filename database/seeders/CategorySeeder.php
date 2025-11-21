@@ -37,7 +37,7 @@ class CategorySeeder extends Seeder
         // Hommikusöök kategooriad (menu_type_id = 2)
         DB::table('categories')->insert([
             'menu_type_id' => 2,
-            'name' => 'Hommikutoidud',
+            'name' => 'Hommikusöögid',
             'order_index' => 1,
             'created_at' => now(),
             'updated_at' => now(),
