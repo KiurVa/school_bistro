@@ -1,0 +1,545 @@
+# Bistroo projekti kondikava (täiendatud versioon)
+
+See dokument kirjeldab Bistroo menüüprojekti kavandit, mis on loodud Laravel 12 raamistikul ja kasutab SQLite andmebaasi. 
+Süsteem võimaldab kuvada kooli söökla menüüd nii avalikus vaates (televiisoriekraanil ja kooli kodulehel) 
+kui ka hallatakse administraatori liidese kaudu. Projektis osaleb kolmeliikmeline tiim ja versioonihaldus toimub GitHubis.
+
+---
+
+## 1. Projekti eesmärk
+
+Luua Laravel 12 raamistikul töötav menüühaldussüsteem Bistroo, millel on:
+- **Avalik vaade** - TV-ekraanil ja kooli kodulehel kuvamiseks
+- **Administraatori liides** - menüüde ja toitude sisestamine
+- **Automaatne kuupäevavahetus** - südaööl muutub kuupäev ja eelmise päeva menüü peidetakse
+- **Mitut tüüpi menüüd** - lõunamenüü, hommikusöök, laagrimenüü, üritusemenüü
+- **Dünaamiline sisu uuendus** - automaatne värskendus iga 30 sekundi järel
+
+---
+
+## 2. Funktsionaalsed nõuded
+
+### 2.1 Avalik vaade
+
+#### Kuupäev ja automaatika
+- Kuupäev kuvatakse alati päises ja muutub südaööl automaatselt
+- Kui uut menüüd pole sisestatud, kuvatakse tekst: **"Menüüd pole veel sisestatud"**
+- Kell 00:00 peidetakse eelmise päeva menüü automaatselt (`is_visible = false`)
+- Eelmise päeva andmed jäävad andmebaasi alles statistika tegemiseks
+
+#### Päis
+- Päis koosneb 1–3 reast infot (kuvatakse ainult täidetud read)
+- **1. variant (1 rida):** Näiteks "Toidud valmistasid kursus 1"
+- **2. variant (2 rida):** Esimene rida - teema (nt "Pannkoogi pühapäev"), teine rida - soovitaja (nt "Soovitab peakokk")
+- **3. variant (3 rida):** Mõlemad eelmised variandid korraga (2. variant üleval, 1. variant all)
+
+#### Kategooriad ja tooted
+- **Kategooriad:** Koolilõuna, Supid, Praed, Lisandid, Kastmed, Salatid, Magustoidud
+- Kategooriaid saab lisada ja nende järjekorda määrata menüütüübi kaupa
+- **Koolilõuna** kategooria nimi kuvatakse punase värviga
+- Toidud kuuluvad kategooriatesse ja sisaldavad:
+  - Nime
+  - Täishinda ja poolhinda
+  - G (gluteenivaba) ja L (laktoosivaba) märgistust
+  - Saadavuse staatust (kui toit on otsas → kuvatakse hägusena)
+
+#### Hinnad
+- Täishind ja poolhind sisestatakse käsitsi (pole automaatne poolitus)
+- Kui mõlemad hinnad olemas → kuvatakse kaldkriipsuga: **3.50 / 2.00**
+- **Kastmete** kategoorias: kui hind = 0 → kuvatakse tekst **"Prae hinna sees"**
+- Muudes kategooriates peab hind olema vähemalt 0.01 €
+
+#### Menüütüübid (vaated)
+Kasutaja (admin) valib käsitsi, millist menüüd avalikus vaates kuvatakse. Korraga kuvatakse ainult üht menüüd.
+
+**1. Tavaline menüü (lõunamenüü)**
+- Kategooriad: Koolilõuna, Supid, Praed, Lisandid, Kastmed, Salatid, Magustoidud
+- Hinnad kuvatakse
+
+**2. Hommikusöök**
+- Kategooria: Hommikutoidud
+- Hinnad kuvatakse
+
+**3. Laagrimenüü**
+- Kolm plokki: Hommikusöök, Lõunasöök, Õhtusöök
+- Vaikimisi hindasid ei kuvata, aga kui sisestatud, siis kuvatakse
+
+**4. Üritusemenüü**
+- Kategooria võib olla asutuse/ürituse nimi
+- Vaikimisi hindasid ei kuvata, aga kui sisestatud, siis kuvatakse
+
+#### Lisafunktsioonid
+- Automaatne sisu värskendus (AJAX, iga 30 sekundi järel)
+- Taustapildi muutmine avalikus vaates
+- Toidu "udustamine" (hägustamine), kui toit on otsas
+
+### 2.2 Administraatori liides
+
+#### Kasutajahaldus
+- Admin kasutaja luuakse rakenduse loomise hetkel
+- Admin saab muuta oma parooli
+
+#### Menüühaldus
+- Menüüde lisamine/muutmine/kustutamine (CRUD)
+- Kuupäeva valimine kalendrist
+- Menüütüübi valimine (lõuna, hommik, laager, üritus)
+- Päise ridade täitmine (1–3 rida)
+- Taustapildi üleslaadimine
+
+#### Toiduhaldus
+- Toidu lisamine kategooriasse
+- Toidu nime sisestamisel otsing/soovitused pärast 4 tähte (andmebaasist)
+- G (gluteenivaba) ja L (laktoosivaba) märkeruudud
+- Hindade sisestamine (täishind, poolhind)
+- "Prae hinna sees" märkimine (hind = 0)
+- Toidu märkimine "otsas" (is_available = false)
+- Toitude järjekorra muutmine kategoorias
+
+#### Kategooriahaldus
+- Kategooriate lisamine/muutmine/kustutamine
+- Kategooriate seostamine menüütüüpidega
+- Kategooriate järjekorra määramine menüütüübi kaupa
+- Kategooria värvi määramine (nt Koolilõuna = punane)
+
+#### Statistika
+- Populaarseimad toidud (mitu korda menüüs olnud)
+- Toidu esinemise ajalugu
+- Menüütüüpide kasutusstatistika
+
+### 2.3 Tehnilised nõuded
+
+#### Kuvaoptimeerimine
+- Menüü peab töötama **50-tollises külili keeratud televiisoriekraanil**
+- Tekst peab olema loetav ja menüü ära mahtuma
+- Leht peab olema responsiivne ja töötama:
+  - Mobiiltelefonides
+  - Tahvelarvutites
+  - Arvutites
+  - Kooli kodulehel
+
+#### Vormid
+- Vormi väljad ei tohi pakkuda automaatset ajalugu (autocomplete off)
+- Toidu sisestamisel pakkuda soovitusi andmebaasist (live search)
+
+---
+
+## 3. Andmemudel (täiendatud versioon)
+
+### 3.1 Tabelid ja struktuur
+
+#### **menu_types** - Menüütüübid
+Sisaldab 4–5 menüütüüpi (lõuna, hommik, laager, üritus).
+
+| Väli | Tüüp | Kirjeldus |
+|------|------|-----------|
+| id | int | Primaarvõti |
+| name | string | Sisekodeeritud nimi (nt "louna", "laager") |
+| display_name | string | Kuvatav nimi (nt "Lõunamenüü", "Laagrimenüü") |
+| show_prices | boolean | Kas hindasid vaikimisi kuvatakse (default: true) |
+| created_at | timestamp | Loomise aeg |
+| updated_at | timestamp | Muutmise aeg |
+
+**Näidisandmed:**
+```
+1. name: "louna",    display_name: "Lõunamenüü",    show_prices: true
+2. name: "hommik",   display_name: "Hommikusöök",   show_prices: true
+3. name: "laager",   display_name: "Laagrimenüü",   show_prices: false
+4. name: "uritus",   display_name: "Üritusemenüü",  show_prices: false
+```
+
+---
+
+#### **categories** - Kategooriad
+Toidukategooriad, mis on seotud menüütüüpidega.
+
+| Väli | Tüüp | Kirjeldus |
+|------|------|-----------|
+| id | int | Primaarvõti |
+| menu_type_id | int | Võõrvõti → menu_types (millise menüütüübi alla kuulub) |
+| name | string | Kategooria nimi (nt "Supid", "Praed", "Hommikusöök") |
+| order_index | int | Kuvamise järjekord selle menüütüübi sees (default: 0) |
+$table->boolean('is_visible')->default(true);
+| created_at | timestamp | Loomise aeg |
+| updated_at | timestamp | Muutmise aeg |
+
+**Seosed:**
+- `menu_type_id` → foreign key → `menu_types.id` (CASCADE delete)
+
+**Näidisandmed:**
+```
+Lõunamenüü (menu_type_id=1):
+  - Koolilõuna (order: 1, color: "#FF4242")
+  - Supid (order: 2)
+  - Praed (order: 3)
+  - Lisandid (order: 4)
+  - Kastmed (order: 5)
+  - Salatid (order: 6)
+  - Magustoidud (order: 7)
+
+Laagrimenüü (menu_type_id=3):
+  - Hommikusöök (order: 1)
+  - Lõunasöök (order: 2)
+  - Õhtusöök (order: 3)
+```
+
+---
+
+#### **menus** - Menüüd (päevad)
+Iga menüü on seotud ühe kuupäeva ja ühe menüütüübiga.
+
+| Väli | Tüüp | Kirjeldus |
+|------|------|-----------|
+| id | int | Primaarvõti |
+| menu_type_id | int | Võõrvõti → menu_types (millist tüüpi menüü) |
+| date | date | Menüü kuupäev (nt 2025-11-21) |
+| header_line1 | string (nullable) | Päise esimene rida |
+| header_line2 | string (nullable) | Päise teine rida |
+| header_line3 | string (nullable) | Päise kolmas rida |
+| background_image | string (nullable) | Taustapildi failinimi (storage/images/) |
+| is_visible | boolean | Kas menüü on avalikus vaates nähtav (default: true) |
+| created_at | timestamp | Loomise aeg |
+| updated_at | timestamp | Muutmise aeg |
+
+**Seosed:**
+- `menu_type_id` → foreign key → `menu_types.id` (CASCADE delete)
+
+**Äriloogika:**
+- Iga päev kell 00:00 Laravel Scheduler seab `is_visible = false` kõikidele menüüdele, kus `date < täna`
+- Andmed jäävad andmebaasi alles statistika jaoks
+
+---
+
+#### **menu_items** - Menüü kirjed (toidud)
+Konkreetsed toidud, mis kuuluvad menüüsse ja kategooriasse.
+
+| Väli | Tüüp | Kirjeldus |
+|------|------|-----------|
+| id | int | Primaarvõti |
+| menu_id | int | Võõrvõti → menus (millisesse menüüsse kuulub) |
+| category_id | int | Võõrvõti → categories (millisesse kategooriasse kuulub) |
+| name | string | Toidu nimi (sisestatakse iga kord käsitsi) |
+| full_price | decimal(8,2) | Täishind (nt 3.50) |
+| half_price | decimal(8,2) (nullable) | Poolhind (nt 2.00) |
+| included_in_main | boolean | Kas "Prae hinna sees" (default: false) |
+| gluten_free | boolean | Gluteenivaba märgistus (G) (default: false) |
+| lactose_free | boolean | Laktoosivaba märgistus (L) (default: false) |
+| is_available | boolean | Kas toit on saadaval (kui false → hägune) (default: true) |
+| order_index | int | Toidu järjekord kategoorias (default: 0) |
+| created_at | timestamp | Loomise aeg |
+| updated_at | timestamp | Muutmise aeg |
+
+**Seosed:**
+- `menu_id` → foreign key → `menus.id` (CASCADE delete)
+- `category_id` → foreign key → `categories.id` (CASCADE delete)
+
+**Äriloogika:**
+- Kui `full_price = 0` ja `half_price = 0` JA kategooria on "Kastmed" → kuvada "Prae hinna sees"
+- Kui `is_available = false` → kuvada hägusena (CSS: blur filter)
+- Kui `full_price > 0` ja `half_price = null` → kuvada ainult täishind
+- Kui mõlemad täidetud → kuvada "3.50 / 2.00"
+
+---
+
+### 3.2 Seoste diagramm
+
+```
+menu_types (1) ──────┐
+                     │
+                     │ (1:N)
+                     │
+                     ├──> categories (N)
+                     │
+                     │ (1:N)
+                     │
+                     └──> menus (N) ──┐
+                                      │
+                                      │ (1:N)
+                                      │
+                                      └──> menu_items (N)
+                                            │
+                                            │ (N:1)
+                                            │
+                                            └──> categories (1)
+```
+
+**Selgitus:**
+- Üks menüütüüp sisaldab mitut kategooriat
+- Üks menüütüüp sisaldab mitut menüüd (erinevatel päevadel)
+- Üks menüü sisaldab mitut toitu (menu_items)
+- Iga toit kuulub ühte kategooriasse
+
+---
+
+### 3.3 Migratsioonide järjekord
+
+Laravel migratsioonid tuleb käivitada järgmises järjekorras (seoste tõttu):
+
+```
+1. create_menu_types_table.php
+2. create_categories_table.php (vajab menu_types)
+3. create_menus_table.php (vajab menu_types)
+4. create_menu_items_table.php (vajab menus ja categories)
+5. seed_default_data.php (seeder menüütüüpide ja kategooriatega)
+```
+
+---
+
+## 4. Tehniline ülesehitus
+
+### 4.1 Backend
+- **Raamistik:** Laravel 12
+- **ORM:** Eloquent
+- **API:** REST endpointid (GET, POST, PUT, DELETE)
+- **Automaatika:** Laravel Scheduler (südaöö reset)
+- **Validatsioon:** Form Request klassid
+
+### 4.2 Andmebaas
+- **Arenduses:** SQLite
+- **Produktsioonis:** MySQL/PostgreSQL (tulevikus)
+
+### 4.3 Frontend
+- **Template engine:** Blade
+- **CSS raamistik:** Bootstrap 5
+- **JavaScript:** jQuery + AJAX
+- **Dünaamilisus:** AJAX polling (30 sekundit)
+- **Responsiivne disain:** Mobile-first approach
+
+### 4.4 Failihaldus
+- Taustapildid: `storage/app/public/images/`
+- Symlink: `php artisan storage:link`
+
+### 4.5 Autentimine
+- **Laravel Breeze** või **Fortify**
+- Ainult admin kasutajad
+- Rollipõhine laiendus tulevikus
+
+### 4.6 Versioonihaldus
+- **GitHub** repositoorium
+- **Branchid:**
+  - `main` - produktsioon
+  - `dev` - arendus
+  - `feature/*` - uued funktsioonid
+
+---
+
+## 5. Tiimitöö ja rollid
+
+Kolmeliikmeline tiim jagab vastutusalad:
+
+### Liige 1 - Backend Developer
+- Andmemudelite loomine (migratsioonid, seederid)
+- Kontrollerid ja API endpointid
+- Kuupäevavahetuse loogika (Scheduler)
+- Eloquent seoste ja päringute optimeerimine
+
+### Liige 2 - Frontend Developer
+- Avaliku vaate disain (Blade + Bootstrap)
+- AJAX automaatne värskendus
+- TV-ekraani optimeerimine (responsive CSS)
+- Kuupäeva dünaamiline kuvamine
+- Toitude hägustamine (CSS blur)
+
+### Liige 3 - Admin Panel Developer
+- Administraatori liidese loomine (CRUD)
+- Autentimine ja kasutajahaldus
+- Statistika mooduli loomine
+- Taustapildi üleslaadimise funktsioon
+- Kategooriate järjekorra muutmine (drag & drop)
+
+---
+
+## 6. Projekti tööetapid
+
+### Etapp 1: Planeerimine ja seadistus (1 nädal)
+- Projekti struktuuri kavandamine
+- GitHub repository loomine
+- Laravel 12 installatsioon
+- SQLite andmebaasi seadistus
+- Tiimi rollide määramine
+
+### Etapp 2: Andmebaas ja migratsioonid (1 nädal)
+- Migratsioonifailide loomine
+- Seoste määratlemine Eloquent'is
+- Seederite loomine (näidisandmed)
+- Andmebaasi testimine
+
+### Etapp 3: Avalik vaade - põhifunktsioonid (2 nädalat)
+- Blade template'ide loomine
+- Menüü kuvamine kategooriate kaupa
+- Kuupäeva automaatne värskendus
+- AJAX polling (30 sek)
+- "Menüüd pole sisestatud" vaade
+
+### Etapp 4: Avalik vaade - täiendused (1 nädal)
+- Päise ridade dünaamiline kuvamine
+- Hindade vormindus (täis/pool, "Prae hinna sees")
+- G/L märgistused
+- Toidu hägustamine (otsas)
+- TV-ekraani optimeerimine
+
+### Etapp 5: Admin liides - CRUD (2 nädalat)
+- Autentimine (Breeze)
+- Menüüde lisamine/muutmine/kustutamine
+- Toitude sisestamine kategooriatesse
+- Kategooriate haldamine
+- Taustapildi üleslaadimine
+
+### Etapp 6: Admin liides - täiendused (1 nädal)
+- Toidu otsing/soovitused (live search)
+- Toitude järjekorra muutmine (drag & drop)
+- Toidu "udustamine" (is_available toggle)
+- Päise ridade haldus
+
+### Etapp 7: Erinevad menüütüübid (1 nädal)
+- Lõunamenüü vaade
+- Hommikusöögi vaade
+- Laagrimenüü vaade (3 plokki)
+- Üritusemenüü vaade
+- Menüütüübi valik (admin + avalik)
+
+### Etapp 8: Südaöö automaatika (3 päeva)
+- Laravel Scheduler seadistus
+- Cron job seadistus serveris
+- Kuupäeva automaatne vahetus
+- `is_visible = false` eelmistele menüüdele
+
+### Etapp 9: Statistika moodul (1 nädal)
+- Populaarseimad toidud (TOP 10)
+- Toidu esinemise ajalugu
+- Menüütüüpide kasutusstatistika
+- Graafikud (Chart.js)
+
+### Etapp 10: Testimine ja parandused (1 nädal)
+- Testimine erinevates seadmetes:
+  - 50-tolline TV (külili)
+  - Mobiiltelefon
+  - Tahvelarvuti
+  - Arvuti
+  - Kooli koduleht
+- Bug fix'id
+- Jõudluse optimeerimine
+
+### Etapp 11: Dokumentatsioon ja deploy (3 päeva)
+- Kasutaja manuaal (admin)
+- Tehniline dokumentatsioon
+- README.md GitHubis
+- Serverisse deploy
+
+---
+
+## 7. API endpointid
+
+### Avalik vaade (GET)
+```
+GET /api/menu/current
+  - Tagastab tänase nähtava menüü koos toidukirjetega
+  - Response: JSON {menu, items, categories}
+
+GET /api/menu/{date}
+  - Tagastab konkreetse kuupäeva menüü
+  - Response: JSON {menu, items, categories}
+```
+
+### Admin (vajalik autentimine)
+```
+POST   /api/menus           - Uue menüü loomine
+GET    /api/menus/{id}      - Menüü vaatamine
+PUT    /api/menus/{id}      - Menüü muutmine
+DELETE /api/menus/{id}      - Menüü kustutamine
+
+POST   /api/menu-items      - Toidu lisamine
+PUT    /api/menu-items/{id} - Toidu muutmine
+DELETE /api/menu-items/{id} - Toidu kustutamine
+
+GET    /api/categories      - Kõik kategooriad
+POST   /api/categories      - Uue kategooria loomine
+
+GET    /api/statistics      - Statistika andmed
+```
+
+---
+
+## 8. Südaöö automaatika (Laravel Scheduler)
+
+### Seadistus
+
+**app/Console/Kernel.php:**
+```php
+protected function schedule(Schedule $schedule)
+{
+    // Iga päev kell 00:00 peida eelmise päeva menüüd
+    $schedule->call(function () {
+        Menu::where('date', '<', now()->toDateString())
+             ->update(['is_visible' => false]);
+    })->dailyAt('00:00');
+}
+```
+
+**Serveri cron job:**
+```bash
+* * * * * cd /path-to-project && php artisan schedule:run >> /dev/null 2>&1
+```
+
+---
+
+## 9. Tuleviku täiendused (valikulised)
+
+### Faas 2 (hiljem)
+- JSON/API eksport mobiilirakendusele
+- Nädalamenüü vaade (7 päeva korraga)
+- Rollipõhine kasutajahaldus (admin, toimetaja, vaataja)
+- Livewire või Vue.js reaalajas värskendamiseks
+- Mitme keele tugi (eesti, inglise, vene)
+
+### Faas 3 (tulevikus)
+- Toitude kalorsususe arvutamine
+- Allergeenide laiendatud märgistus
+- QR-kood menüüle (lingib kodulehele)
+- Menüü PDF eksport
+- Push-teavitused uue menüü sisestamisel
+
+---
+
+## 10. Näited SQL päringuteks
+
+### Populaarseimad toidud (TOP 10)
+```sql
+SELECT name, COUNT(*) as count
+FROM menu_items
+GROUP BY name
+ORDER BY count DESC
+LIMIT 10;
+```
+
+### Konkreetse toidu ajalugu
+```sql
+SELECT menus.date, menu_items.name, menu_items.full_price
+FROM menu_items
+JOIN menus ON menu_items.menu_id = menus.id
+WHERE menu_items.name LIKE '%kartulipüree%'
+ORDER BY menus.date DESC;
+```
+
+### Menüütüüpide kasutus
+```sql
+SELECT menu_types.display_name, COUNT(menus.id) as usage_count
+FROM menus
+JOIN menu_types ON menus.menu_type_id = menu_types.id
+GROUP BY menu_types.id
+ORDER BY usage_count DESC;
+```
+
+---
+
+## 11. Kokkuvõte
+
+Bistroo menüüprojekt on lihtsustatud, kuid funktsionaalne lahendus kooli söökla menüüde haldamiseks ja kuvamiseks. Projekti tugevused:
+
+✅ **Lihtne andmebaasi struktuur** - 4 põhitabelit, selged seosed  
+✅ **Paindlik menüütüüpide süsteem** - lihtne lisada uusi tüüpe  
+✅ **Automaatne südaöö reset** - ei vaja käsitsi sekkumist  
+✅ **Statistika võimalus** - andmed jäävad alles  
+✅ **TV ja veebi optimeerimine** - responsive disain  
+✅ **Lihtne hooldada** - kolm tiimi liiget saavad paralleelselt töötada  
+
+Projekt on valmis 10–12 nädalaga (3 inimest, osaline töö).
