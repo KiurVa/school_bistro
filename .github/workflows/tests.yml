@@ -43,14 +43,6 @@ jobs:
       - name: Generate app key
         run: php artisan key:generate
 
-      - name: Create SQLite database
-        run: |
-          mkdir -p database
-          touch database/database.sqlite
-
-      - name: Enable foreign keys for SQLite
-        run: sqlite3 database/database.sqlite "PRAGMA foreign_keys = ON;"
-
       - name: Run migrations
         run: php artisan migrate --force
 
