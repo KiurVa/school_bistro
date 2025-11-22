@@ -48,6 +48,9 @@ jobs:
           mkdir -p database
           touch database/database.sqlite
 
+      - name: Enable foreign keys for SQLite
+        run: sqlite3 database/database.sqlite "PRAGMA foreign_keys = ON;"
+
       - name: Run migrations
         run: php artisan migrate --force
 
