@@ -16,12 +16,56 @@
         <div class="collapse navbar-collapse" id="mainNavbar">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                 {{-- Dashboard --}}
-                <li class="nav-item">
+                {{-- <li class="nav-item">
                     <a class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}"
                        href="{{ route('dashboard') }}">
                         Avaleht
                     </a>
+                </li> --}}
+
+                <li class="nav-item">
+                    <a class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}"
+                       href="{{ route('dashboard') }}">
+                        Lisa menüü
+                    </a>
                 </li>
+
+                <li class="nav-item">
+                    <a class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}"
+                       href="{{ route('dashboard') }}">
+                        Menüühaldus
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}"
+                       href="{{ route('dashboard') }}">
+                        Kategooria haldus
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}"
+                       href="{{ route('dashboard') }}">
+                        Allergeenide haldus
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}"
+                       href="{{ route('dashboard') }}">
+                        Statistika
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}"
+                       href="{{ route('dashboard') }}">
+                        Kasutajate haldus
+                    </a>
+                </li>
+
+
 
                 {{-- Menüü tüübid (kui sul on vastav route) --}}
                 {{-- <li class="nav-item">
