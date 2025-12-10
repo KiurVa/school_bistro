@@ -25,7 +25,7 @@
 
                 <li class="nav-item">
                     <a class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}"
-                       href="{{ route('dashboard') }}">
+                       href="{{ route('menus.create') }}">
                         Lisa menüü
                     </a>
                 </li>

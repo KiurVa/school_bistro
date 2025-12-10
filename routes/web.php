@@ -13,4 +13,6 @@ Route::middleware('auth')->get('/dashboard', function () {
     return view('admin.dashboard');
 })->name('dashboard');
 
+Route::middleware('auth')->resource('menus', \App\Http\Controllers\Admin\MenuController::class);
+
 Route::get('/', [MenuController::class, 'show'])->name('menu');
