@@ -1,5 +1,5 @@
 @import 'bootstrap/dist/css/bootstrap.min.css';
 
 .blur-item {
-    filter: blur(2px);
+    filter: blur(4px);
 }
