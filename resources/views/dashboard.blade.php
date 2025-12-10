@@ -1,17 +1,16 @@
-<!DOCTYPE html>
-<html lang="et">
-<head>
-    <meta charset="UTF-8">
-    <title>Dashboard</title>
-</head>
-<body>
-    <h1>Tere tulemast, {{ auth()->user()->name }}!</h1>
+@extends('layouts.app')
 
-    <p>Siia saame hiljem lisada admin ja kasutaja lingid / vaated.</p>
+@section('title', 'Bistroo – Dashboard')
 
-    <form method="POST" action="{{ route('logout') }}">
-        @csrf
-        <button type="submit">Logi välja</button>
-    </form>
-</body>
-</html>
+@section('content')
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 mb-0">Bistroo menüü haldus</h1>
+    </div>
+
+    {{-- Siia tuleb sinu dashboardi sisu (menüü tüüpide kaardid jne) --}}
+    <div class="row">
+        <div class="col-12">
+            <p>Siia teeme Lõunamenüü, Hommikusöök jne kaardid.</p>
+        </div>
+    </div>
+@endsection
