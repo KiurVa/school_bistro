@@ -2,7 +2,10 @@
 
 @section('title', 'Bistroo menüü')
 
+@section('hide_nav', true)
+
 @section('content')
+
 
 
     <div class="container-fluid">
