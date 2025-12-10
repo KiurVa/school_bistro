@@ -21,7 +21,7 @@ return new class extends Migration
             $table->string('header_line2')->nullable();
             $table->string('header_line3')->nullable();
             $table->string('background_image')->nullable();
-            $table->boolean('is_visible')->default(true);
+            $table->boolean('is_visible')->default(false);
             $table->timestamps();
             $table->softDeletes();
 

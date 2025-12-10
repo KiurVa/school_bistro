@@ -15,7 +15,6 @@ return new class extends Migration
             $table->id();
             $table->string('name')->unique(); // louna, hommik, laager, uritus
             $table->string('display_name'); // Lõunamenüü, Hommikusöök
-            $table->boolean('show_prices')->default(true);
             $table->timestamps();
         });
     }

@@ -17,28 +17,24 @@ class MenuTypeSeeder extends Seeder
             [
                 'name' => 'louna',
                 'display_name' => 'Lõunamenüü',
-                'show_prices' => true,
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
             [
                 'name' => 'hommik',
                 'display_name' => 'Hommikusöök',
-                'show_prices' => true,
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
             [
                 'name' => 'laager',
                 'display_name' => 'Laagrimenüü',
-                'show_prices' => false,
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
             [
                 'name' => 'uritus',
                 'display_name' => 'Üritusemenüü',
-                'show_prices' => false,
                 'created_at' => now(),
                 'updated_at' => now(),
             ],

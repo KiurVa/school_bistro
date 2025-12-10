@@ -135,7 +135,6 @@ Sisaldab 4–5 menüütüüpi (lõuna, hommik, laager, üritus).
 | id | int | Primaarvõti |
 | name | string | Sisekodeeritud nimi (nt "louna", "laager") |
 | display_name | string | Kuvatav nimi (nt "Lõunamenüü", "Laagrimenüü") |
-| show_prices | boolean | Kas hindasid vaikimisi kuvatakse (default: true) |
 | created_at | timestamp | Loomise aeg |
 | updated_at | timestamp | Muutmise aeg |
 
@@ -221,8 +220,6 @@ Konkreetsed toidud, mis kuuluvad menüüsse ja kategooriasse.
 | full_price | decimal(8,2) | Täishind (nt 3.50) |
 | half_price | decimal(8,2) (nullable) | Poolhind (nt 2.00) |
 | included_in_main | boolean | Kas "Prae hinna sees" (default: false) |
-| gluten_free | boolean | Gluteenivaba märgistus (G) (default: false) |
-| lactose_free | boolean | Laktoosivaba märgistus (L) (default: false) |
 | is_available | boolean | Kas toit on saadaval (kui false → hägune) (default: true) |
 | order_index | int | Toidu järjekord kategoorias (default: 0) |
 | created_at | timestamp | Loomise aeg |
