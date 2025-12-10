@@ -1,0 +1,32 @@
+<?php
+
+namespace Database\Seeders;
+
+use Illuminate\Database\Seeder;
+use App\Models\User;
+
+class UserSeeder extends Seeder
+{
+    public function run(): void
+    {
+        // Admin
+        User::updateOrCreate(
+            ['email' => 'admin@example.com'],
+            [
+                'name' => 'Admin',
+                'password' => bcrypt('Parool1'),
+                'role' => 'admin',
+            ]
+        );
+
+        // Tavakasutaja
+        User::updateOrCreate(
+            ['email' => 'user@example.com'],
+            [
+                'name' => 'User',
+                'password' => bcrypt('Parool1'),
+                'role' => 'user',
+            ]
+        );
+    }
+}

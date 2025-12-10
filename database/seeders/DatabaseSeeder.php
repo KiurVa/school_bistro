@@ -19,6 +19,7 @@ class DatabaseSeeder extends Seeder
             MenuTypeSeeder::class,
             CategorySeeder::class,
             MenuSeeder::class,
+            UserSeeder::class,
             ]);
 
         // User::factory()->create([
