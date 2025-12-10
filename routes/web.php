@@ -10,7 +10,7 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 // Dashboard – ainult sisse logitud kasutajale
 Route::middleware('auth')->get('/dashboard', function () {
-    return view('dashboard');
+    return view('admin.dashboard');
 })->name('dashboard');
 
 Route::get('/', [MenuController::class, 'show'])->name('menu');
