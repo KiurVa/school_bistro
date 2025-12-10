@@ -33,7 +33,8 @@ class MenuController extends Controller
                               ->with(['menuItems' => function($query) use ($menu) {
                                   $query->where('menu_id', $menu->id)
                                         ->whereNull('deleted_at')
-                                        ->orderBy('order_index');
+                                        ->orderBy('order_index')
+                                        ->with('allergens');
                               }])
                               ->get();
     }

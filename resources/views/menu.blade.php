@@ -47,12 +47,10 @@
                         <td class="col-8 py-2 ps-2 {{ $item->is_available ? '' : 'blur-item' }}">
                             {{ Str::upper($item->name) }}
 
-                            @if ($item->gluten_free)
-                                <span class="badge bg-secondary">G</span>
-                            @endif
-                            @if ($item->lactose_free)
-                                <span class="badge bg-secondary">L</span>
-                            @endif
+                            {{-- Kuvame kõik allergeenid --}}
+                            @foreach ($item->allergens as $allergen)
+                                <span class="badge bg-secondary">{{ $allergen->code }}</span>
+                            @endforeach
                         </td>
 
                         <td class="col-4 py-2 text-end pe-2">

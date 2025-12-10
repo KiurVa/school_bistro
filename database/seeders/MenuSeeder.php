@@ -47,6 +47,13 @@ class MenuSeeder extends Seeder
             ->orderBy('order_index')
             ->get();
 
+        // Otsi "G" (Gluteen) allergeeni ID üks kord
+        $gluteenId = DB::table('allergens')
+            ->where('code', 'G')
+            ->value('id');
+
+        $this->command->info("Gluteen ID: " . ($gluteenId ?? 'EI LEITUD'));
+
         foreach ($categories as $category) {
 
             if (Str::lower($category->name) === 'koolilõuna') {
@@ -62,33 +69,44 @@ class MenuSeeder extends Seeder
                     'updated_at' => now(),
                 ]);
             } else {
-                // Kõik muud kategooriad: 2 toitu
-                DB::table('menu_items')->insert([
-                    [
-                        'menu_id' => $menuId,
-                        'category_id' => $category->id,
-                        'name' => $category->name . ' toit 1',
-                        'full_price' => 3.50,
-                        'half_price' => 2.00,
-                        'is_available' => true,
-                        'order_index' => 1,
-                        'created_at' => now(),
-                        'updated_at' => now(),
-                    ],
-                    [
-                        'menu_id' => $menuId,
-                        'category_id' => $category->id,
-                        'name' => $category->name . ' toit 2',
-                        'full_price' => 4.00,
-                        'half_price' => null,
-                        'is_available' => false,
-                        'order_index' => 2,
-                        'created_at' => now(),
-                        'updated_at' => now(),
-                    ],
+                // TOIT 1 - ILMA ALLERGEENITA
+                $toit1Id = DB::table('menu_items')->insertGetId([
+                    'menu_id' => $menuId,
+                    'category_id' => $category->id,
+                    'name' => $category->name . ' toit 1',
+                    'full_price' => 3.50,
+                    'half_price' => 2.00,
+                    'is_available' => true,
+                    'order_index' => 1,
+                    'created_at' => now(),
+                    'updated_at' => now(),
                 ]);
+
+                // TOIT 2 - GLUTEENIGA
+                $toit2Id = DB::table('menu_items')->insertGetId([
+                    'menu_id' => $menuId,
+                    'category_id' => $category->id,
+                    'name' => $category->name . ' toit 2',
+                    'full_price' => 4.00,
+                    'half_price' => null,
+                    'is_available' => true,
+                    'order_index' => 2,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+
+                // Lisa gluteen ainult toit 2 juurde
+                if ($gluteenId) {
+                    DB::table('allergen_menu_item')->insert([
+                        'menu_item_id' => $toit2Id,
+                        'allergen_id' => $gluteenId,
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ]);
+                    
+                    $this->command->info("Lisatud gluteen toidule: {$category->name} toit 2 (ID: {$toit2Id})");
+                }
             }
         }
-    
     }
 }

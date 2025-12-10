@@ -12,9 +12,6 @@ class MenuItem extends Model
         'name',
         'full_price',
         'half_price',
-        'included_in_main',
-        'gluten_free',
-        'lactose_free',
         'is_available',
         'order_index'
     ];
@@ -40,5 +37,9 @@ class MenuItem extends Model
     public function category()
     {
         return $this->belongsTo(Category::class);
+    }
+
+    public function allergens() {
+        return $this->belongsToMany(Allergen::class, 'allergen_menu_item')->withTimestamps();
     }
 }
