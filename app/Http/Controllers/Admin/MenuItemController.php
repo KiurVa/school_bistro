@@ -109,11 +109,14 @@ class MenuItemController extends Controller
     {
         $term = $request->term;
 
-        $items = MenuItem::where('name', 'LIKE', "%$term%")
-            ->select('name')
-            ->distinct()
-            ->limit(5)
-            ->get();
+        if (strlen($term) < 3) {
+            return response()->json([]);
+        }
+
+        $items = MenuItem::where('name', 'LIKE', '%' . $term . '%')
+            ->orderBy('name')
+            ->limit(10)
+            ->get(['name']);
 
         return response()->json($items);
     }

@@ -5,9 +5,6 @@
 @section('hide_nav', true)
 
 @section('content')
-
-
-
     <div class="container-fluid">
 
         {{-- FIXED KUUPÄEV --}}
@@ -57,22 +54,25 @@
                         </td>
 
                         <td class="col-4 py-2 text-end pe-2">
-                            {{-- Kui täishind on 0 → Prae hinna sees --}}
-                            @if ($item->full_price == 0)
-                                Prae hinna sees
 
-                                {{-- Kui täishind puudub täielikult → ära kuva hinda --}}
-                            @elseif(is_null($item->full_price))
+                            {{-- Kui täishind puudub täielikult → ära kuva midagi --}}
+                            @if (is_null($item->full_price))
                                 {{-- tühi --}}
 
-                                {{-- Kui pole poolhinda → kuva ainult täishind --}}
-                            @elseif(is_null($item->half_price))
-                                {{ $item->full_price }}
+                                {{-- Kui täishind on TÄPSELT 0.00 → Prae hinna sees --}}
+                            @elseif ((float) $item->full_price === 0.0)
+                                Prae hinna sees
+
+                                {{-- Kui poolhind puudub → kuva ainult täishind --}}
+                            @elseif (is_null($item->half_price))
+                                {{ number_format($item->full_price, 2) }} €
 
                                 {{-- Kui mõlemad hinnad olemas → kuva full / half --}}
                             @else
-                                {{ $item->full_price }} / {{ $item->half_price }}
+                                {{ number_format($item->full_price, 2) }} € /
+                                {{ number_format($item->half_price, 2) }} €
                             @endif
+
                         </td>
 
                     </tr>
