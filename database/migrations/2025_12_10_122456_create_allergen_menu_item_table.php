@@ -18,7 +18,7 @@ return new class extends Migration
                 ->onDelete('cascade');
             $table->foreignId('allergen_id')
                 ->constrained('allergens')
-                ->onDelete('cascade');
+                ->onDelete('restrict');
             $table->timestamps();
 
             $table->unique(['menu_item_id', 'allergen_id']);

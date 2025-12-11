@@ -20,7 +20,6 @@ return new class extends Migration
             $table->integer('order_index')->default(0);
             $table->boolean('is_visible')->default(true);
             $table->timestamps();
-            $table->softDeletes();
 
             $table->index(['menu_type_id', 'order_index']);
             $table->index('is_visible');

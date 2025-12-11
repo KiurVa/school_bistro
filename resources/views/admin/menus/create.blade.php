@@ -71,8 +71,10 @@
 
             <!-- Nähtavus -->
             <div class="mb-3 form-check">
-                <input type="checkbox" name="is_visible" id="is_visible" class="form-check-input"
-                    {{ old('is_visible') ? 'checked' : '' }}>
+                <input type="hidden" name="is_visible" value="0">
+
+                <input type="checkbox" id="is_visible" name="is_visible" class="form-check-input" value="1"
+                    {{ old('is_visible', false) ? 'checked' : '' }}>
                 <label for="is_visible" class="form-check-label">Tee kohe nähtavaks</label>
             </div>
 

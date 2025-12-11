@@ -28,11 +28,9 @@ class MenuController extends Controller
         // Kui menüü leiti → laadime kategooriad + toidud
         $categories = Category::where('menu_type_id', $menuTypeId)
                               ->where('is_visible', true)
-                              ->whereNull('deleted_at')
                               ->orderBy('order_index')
                               ->with(['menuItems' => function($query) use ($menu) {
                                   $query->where('menu_id', $menu->id)
-                                        ->whereNull('deleted_at')
                                         ->orderBy('order_index')
                                         ->with('allergens');
                               }])

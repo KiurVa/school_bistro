@@ -70,9 +70,9 @@ class MenuController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(Menu $menu)
     {
-        //
+        return view('admin.menus.show', compact('menu'));
     }
 
     /**
@@ -81,7 +81,7 @@ class MenuController extends Controller
     public function edit(Menu $menu)
     {
         $menuTypes = MenuType::all();
-        return view('admin.menus.edit', compact('menu', 'menuTypes'));
+        return view('menus.edit', compact('menu', 'menuTypes'));
     }
 
     /**
@@ -121,7 +121,7 @@ class MenuController extends Controller
 
         $menu->update($data);
 
-        return redirect()->route('admin.menus.index')->with('success', 'Menüü uuendatud!');
+        return redirect()->route('menus.index')->with('success', 'Menüü uuendatud!');
     }
 
     /**
@@ -130,6 +130,6 @@ class MenuController extends Controller
     public function destroy(Menu $menu)
     {
         $menu->delete(); // soft delete
-        return redirect()->route('admin.menus.index')->with('success', 'Menüü kustutatud!');
+        return redirect()->route('menus.index')->with('success', 'Menüü kustutatud!');
     }
 }
