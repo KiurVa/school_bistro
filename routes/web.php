@@ -10,10 +10,13 @@ Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [AuthController::class, 'login'])->name('login.perform');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
+// Avaleht – menüü kuvamine kõigile (kasutaja pool)
 // Dashboard – ainult sisse logitud kasutajale
 Route::middleware('auth')->get('/dashboard', function () {
     return view('admin.dashboard');
 })->name('dashboard');
+
+Route::middleware('auth')->resource('menus', \App\Http\Controllers\Admin\MenuController::class);
 
 Route::get('/', [MenuController::class, 'show'])->name('menu');
 
