@@ -48,6 +48,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/categories/{category}/edit', [CategoryController::class, 'edit'])->name('categories.edit');
     Route::put('/categories/{category}', [CategoryController::class, 'update'])->name('categories.update');
     Route::delete('/categories/{category}', [CategoryController::class, 'destroy'])->name('categories.destroy');
+    Route::post('/categories/{category}/up', [CategoryController::class, 'moveUp'])->name('categories.move_up');
+    Route::post('/categories/{category}/down', [CategoryController::class, 'moveDown'])->name('categories.move_down');
 
     // --------------------------
     // Allergeenide haldus

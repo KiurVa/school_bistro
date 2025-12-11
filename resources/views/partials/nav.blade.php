@@ -27,7 +27,6 @@
                 {{-- Menüü haldus --}}
                 <li class="nav-item">
                     <a class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}"
-                       href="{{ route('dashboard') }}">
                         href="{{ route('menus.index') }}">
                         Menüühaldus
                     </a>
