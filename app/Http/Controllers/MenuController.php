@@ -11,12 +11,9 @@ class MenuController extends Controller
 {
     public function show(Request $request)
 {
-    // Admin valib menüütüübi (nt radio nupp)
-    $menuTypeId = $request->input('menu_type_id', 1); // Default: lõuna
 
     // Täna menüü
-    $menu = Menu::where('menu_type_id', $menuTypeId)
-                ->where('date', now()->toDateString())
+    $menu = Menu::where('date', now()->toDateString())
                 ->where('is_visible', true)
                 ->first();
 
@@ -26,7 +23,7 @@ class MenuController extends Controller
 
     if ($menu) {
         // Kui menüü leiti → laadime kategooriad + toidud
-        $categories = Category::where('menu_type_id', $menuTypeId)
+        $categories = Category::where('menu_type_id', $menu->menu_type_id)
                               ->where('is_visible', true)
                               ->orderBy('order_index')
                               ->with(['menuItems' => function($query) use ($menu) {
@@ -37,6 +34,6 @@ class MenuController extends Controller
                               ->get();
     }
 
-    return view('menu', compact('menu', 'categories', 'menuTypeId'));
+    return view('menu', compact('menu', 'categories'));
 }
 }

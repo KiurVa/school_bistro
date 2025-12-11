@@ -51,7 +51,7 @@ class MenuController extends Controller
         ]);
 
         // Nähtavus
-        $data['is_visible'] = $request->has('is_visible') ? true : false;
+        $data['is_visible'] = $request->boolean('is_visible');
 
         // Taustapilt
         if ($request->hasFile('background_image')) {
@@ -96,7 +96,7 @@ class MenuController extends Controller
             'header_line2' => 'nullable|string|max:255',
             'header_line3' => 'nullable|string|max:255',
             'background_image' => 'nullable|image|max:2048',
-            'is_visible' => 'nullable|boolean',
+            'is_visible' => 'boolean',
         ]);
 
         $data = $request->only([
@@ -104,7 +104,7 @@ class MenuController extends Controller
         ]);
 
         // Nähtavus
-        $data['is_visible'] = $request->has('is_visible') ? true : false;
+        $data['is_visible'] = $request->boolean('is_visible');
 
         // Taustapilt
         if ($request->hasFile('background_image')) {
