@@ -7,7 +7,6 @@ use Illuminate\Database\Eloquent\SoftDeletes; // 👈 lisa see
 
 class Category extends Model
 {
-    use SoftDeletes; // 👈 võimaldab soft delete’i (deleted_at veerg)
 
     protected $fillable = [
         'menu_type_id',

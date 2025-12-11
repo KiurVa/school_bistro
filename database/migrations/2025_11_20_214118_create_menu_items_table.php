@@ -18,14 +18,13 @@ return new class extends Migration
                 ->onDelete('cascade');
             $table->foreignId('category_id')
                 ->constrained('categories')
-                ->onDelete('cascade');
+                ->onDelete('restrict');
             $table->string('name');
             $table->decimal('full_price', 8, 2);
             $table->decimal('half_price', 8, 2)->nullable();
             $table->boolean('is_available')->default(true);
             $table->integer('order_index')->default(0);
             $table->timestamps();
-            $table->softDeletes();
 
             $table->index(['menu_id', 'category_id', 'order_index']);
             $table->index('name');
