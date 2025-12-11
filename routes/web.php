@@ -18,13 +18,13 @@ Route::middleware('auth')->group(function () {
     Route::get('/dashboard', function () {
         return view('admin.dashboard');
     })->name('dashboard');
-// Avaleht – menüü kuvamine kõigile (kasutaja pool)
-// Dashboard – ainult sisse logitud kasutajale
-Route::middleware('auth')->get('/dashboard', function () {
-    return view('admin.dashboard');
-})->name('dashboard');
+    // Avaleht – menüü kuvamine kõigile (kasutaja pool)
+    // Dashboard – ainult sisse logitud kasutajale
+    Route::middleware('auth')->get('/dashboard', function () {
+        return view('admin.dashboard');
+    })->name('dashboard');
 
-Route::middleware('auth')->resource('menus', \App\Http\Controllers\Admin\MenuController::class);
+    Route::middleware('auth')->resource('menus', \App\Http\Controllers\Admin\MenuController::class);
 
     // Kategooriate haldus
     Route::get('/dashboard/categories', [CategoryController::class, 'index'])
@@ -36,21 +36,16 @@ Route::middleware('auth')->resource('menus', \App\Http\Controllers\Admin\MenuCon
     Route::post('/dashboard/categories', [CategoryController::class, 'store'])
         ->name('categories.store');
 
-    
+
     Route::get('/dashboard/categories/{category}/edit', [CategoryController::class, 'edit'])
         ->name('categories.edit');
 
-    
+
     Route::put('/dashboard/categories/{category}', [CategoryController::class, 'update'])
         ->name('categories.update');
 
     Route::delete('/dashboard/categories/{category}', [CategoryController::class, 'destroy'])
-    ->name('categories.destroy');
-
-     // Järjekorra muutmine ↑ / ↓
-    Route::post('/categories/{category}/up', [CategoryController::class, 'moveUp'])->name('categories.move_up');
-    Route::post('/categories/{category}}/down', [CategoryController::class, 'moveDown'])->name('categories.move_down');
-
+        ->name('categories.destroy');
 });
 // Avalik menüü
 Route::get('/', [MenuController::class, 'show'])->name('menu');
@@ -71,4 +66,8 @@ Route::middleware('auth')->group(function () {
     // Järjekorra muutmine ↑ / ↓
     Route::post('/allergens/{allergen}/up', [AllergenController::class, 'moveUp'])->name('allergens.move_up');
     Route::post('/allergens/{allergen}/down', [AllergenController::class, 'moveDown'])->name('allergens.move_down');
+
+    // edit/update
+    Route::get('/allergens/{allergen}/edit', [AllergenController::class, 'edit'])->name('allergens.edit');
+    Route::put('/allergens/{allergen}', [AllergenController::class, 'update'])->name('allergens.update');
 });

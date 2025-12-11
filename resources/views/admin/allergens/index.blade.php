@@ -114,14 +114,19 @@
                                     </td>
 
                                     <td class="text-end">
+                                        {{-- MUUDA nupp --}}
+                                        <a href="{{ route('allergens.edit', $allergen) }}"
+                                            class="btn btn-sm btn-warning me-2">
+                                            Muuda
+                                        </a>
+
+                                        {{-- Kustuta nupp --}}
                                         <form action="{{ route('allergens.destroy', $allergen) }}" method="POST"
                                             class="d-inline"
                                             onsubmit="return confirm('Kas oled kindel, et soovid selle allergeeni kustutada?');">
                                             @csrf
                                             @method('DELETE')
-                                            <button type="submit" class="btn btn-sm btn-danger">
-                                                Kustuta
-                                            </button>
+                                            <button type="submit" class="btn btn-sm btn-danger">Kustuta</button>
                                         </form>
                                     </td>
                                 </tr>

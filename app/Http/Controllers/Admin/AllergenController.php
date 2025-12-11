@@ -99,4 +99,47 @@ class AllergenController extends Controller
 
         return redirect()->route('allergens.index');
     }
+    /**
+     * Näita allergeeni muutmise vormi.
+     */
+    public function edit(Allergen $allergen)
+    {
+        return view('admin.allergens.edit', compact('allergen'));
+    }
+
+    /**
+     * Uuenda allergeeni andmeid.
+     */
+    public function update(Request $request, Allergen $allergen)
+    {
+        $validated = $request->validate([
+            'name'        => 'required|string|max:255|unique:allergens,name,' . $allergen->id,
+            'code'        => 'nullable|string|max:10',
+            'order_index' => 'required|integer|min:1',
+        ]);
+
+        // Kui järjekorda muudeti, peame korrigeerima teisi
+        if ($validated['order_index'] != $allergen->order_index) {
+
+            if ($validated['order_index'] > $allergen->order_index) {
+                // liikumas alla → vähenda vahepealsete order_index väärtusi
+                Allergen::whereBetween('order_index', [
+                    $allergen->order_index + 1,
+                    $validated['order_index']
+                ])->decrement('order_index');
+            } else {
+                // liikumas üles → suurenda vahepealsete order_index väärtusi
+                Allergen::whereBetween('order_index', [
+                    $validated['order_index'],
+                    $allergen->order_index - 1
+                ])->increment('order_index');
+            }
+        }
+
+        $allergen->update($validated);
+
+        return redirect()
+            ->route('allergens.index')
+            ->with('success', 'Allergeen uuendatud.');
+    }
 }
