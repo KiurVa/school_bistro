@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\MenuController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Admin\CategoryController;
-use App\Http\Controllers\AllergenController;
+use App\Http\Controllers\Admin\AllergenController;
 
 // Login / logout
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
