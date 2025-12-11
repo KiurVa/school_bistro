@@ -25,6 +25,7 @@
                     <th>Nimi</th>
                     <th>Menüü tüüp</th>
                     <th>Nähtav</th>
+                    <th>Järjekord</th>
                     <th>Tegevused</th>
                 </tr>
             </thead>
@@ -48,6 +49,35 @@
                                 <span class="badge bg-secondary">Ei</span>
                             @endif
                         </td>
+                        {{-- Järjekord --}}
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <span class="me-2">{{ $category->order_index }}</span>
+
+                                <div class="btn-group btn-group-sm" role="group">
+                                    {{-- ↑ ÜLES --}}
+                                    <form action="{{ route('categories.move_up', $category) }}" method="POST"
+                                        class="d-inline">
+                                        @csrf
+                                        <button type="submit" class="btn btn-outline-secondary"
+                                            {{ $loop->first ? 'disabled' : '' }}>
+                                            ↑
+                                        </button>
+                                    </form>
+
+                                    {{-- ↓ ALLA --}}
+                                    <form action="{{ route('categories.move_down', $category) }}" method="POST"
+                                        class="d-inline">
+                                        @csrf
+                                        <button type="submit" class="btn btn-outline-secondary"
+                                            {{ $loop->last ? 'disabled' : '' }}>
+                                            ↓
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </td>
+
 
                         {{-- Tegevused: Muuda + Kustuta --}}
                         <td class="text-end">

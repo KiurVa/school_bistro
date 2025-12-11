@@ -89,4 +89,39 @@ class CategoryController extends Controller
         return redirect()->route('categories.index')
             ->with('success', 'Kategooria kustutatud.');
     }
+
+    public function moveUp(Category $category)
+    {
+        $prev = Category::where('menu_type_id', $category->menu_type_id)
+            ->where('order_index', '<', $category->order_index)
+            ->orderBy('order_index', 'desc')
+            ->first();
+
+        if ($prev) {
+            $currentOrder = $category->order_index;
+
+            $category->update(['order_index' => $prev->order_index]);
+            $prev->update(['order_index' => $currentOrder]);
+        }
+
+        return redirect()->route('categories.index');
+    }
+
+    public function moveDown(Category $category)
+    {
+        $next = Category::where('menu_type_id', $category->menu_type_id)
+            ->where('order_index', '>', $category->order_index)
+            ->orderBy('order_index', 'asc')
+            ->first();
+
+        if ($next) {
+            $currentOrder = $category->order_index;
+
+            $category->update(['order_index' => $next->order_index]);
+            $next->update(['order_index' => $currentOrder]);
+        }
+
+        return redirect()->route('categories.index');
+    }
+
 }

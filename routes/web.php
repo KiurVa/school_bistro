@@ -47,6 +47,10 @@ Route::middleware('auth')->resource('menus', \App\Http\Controllers\Admin\MenuCon
     Route::delete('/dashboard/categories/{category}', [CategoryController::class, 'destroy'])
     ->name('categories.destroy');
 
+     // Järjekorra muutmine ↑ / ↓
+    Route::post('/categories/{category}/up', [CategoryController::class, 'moveUp'])->name('categories.move_up');
+    Route::post('/categories/{category}}/down', [CategoryController::class, 'moveDown'])->name('categories.move_down');
+
 });
 // Avalik menüü
 Route::get('/', [MenuController::class, 'show'])->name('menu');
