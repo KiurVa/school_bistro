@@ -3,19 +3,36 @@
 @section('title', 'Muuda menüüd')
 
 @section('content')
+@if ($errors->any())
+        <div class="alert alert-danger">
+            <ul>
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
     <div class="container mt-4">
 
         <h1>Muuda menüüd</h1>
+        @if (session('success'))
+            <div class="alert alert-success">{{ session('success') }}</div>
+        @endif
 
         <form method="POST" action="{{ route('menus.update', $menu) }}">
             @csrf
             @method('PUT')
 
+            {{-- Kuupäev --}}
             <div class="mb-3">
                 <label class="form-label">Kuupäev</label>
-                <input type="date" name="date" class="form-control" value="{{ old('date', $menu->date->format('Y-m-d')) }}">
+                <input type="date"
+                       name="date"
+                       class="form-control"
+                       value="{{ old('date', $menu->date->format('Y-m-d')) }}">
             </div>
 
+            {{-- Menüü tüüp --}}
             <div class="mb-3">
                 <label class="form-label">Menüü tüüp</label>
                 <select name="menu_type_id" class="form-control">
@@ -25,6 +42,33 @@
                         </option>
                     @endforeach
                 </select>
+            </div>
+
+            {{-- Päiserida 1 --}}
+            <div class="mb-3">
+                <label class="form-label">Päise rida 1</label>
+                <input type="text"
+                       name="header_line1"
+                       class="form-control"
+                       value="{{ old('header_line1', $menu->header_line1) }}">
+            </div>
+
+            {{-- Päiserida 2 --}}
+            <div class="mb-3">
+                <label class="form-label">Päise rida 2</label>
+                <input type="text"
+                       name="header_line2"
+                       class="form-control"
+                       value="{{ old('header_line2', $menu->header_line2) }}">
+            </div>
+
+            {{-- Päiserida 3 --}}
+            <div class="mb-3">
+                <label class="form-label">Päise rida 3</label>
+                <input type="text"
+                       name="header_line3"
+                       class="form-control"
+                       value="{{ old('header_line3', $menu->header_line3) }}">
             </div>
 
             <button class="btn btn-success">Salvesta</button>

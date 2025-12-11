@@ -62,12 +62,6 @@
                     value="{{ old('header_line3') }}">
             </div>
 
-            <!-- Taustapilt -->
-            <div class="mb-3">
-                <label for="background_image" class="form-label">Taustapilt</label>
-                <input type="file" name="background_image" id="background_image" class="form-control"
-                    accept=".jpg,.jpeg,.png,.gif,.webp">
-            </div>
 
             <!-- Nähtavus -->
             <div class="mb-3 form-check">

@@ -38,6 +38,10 @@ Route::middleware('auth')->group(function () {
     // Menüü haldus (admin)
     // --------------------------
     Route::resource('menus', AdminMenu::class);
+    // Nähtavaks (aktiivseks) määramine
+    Route::post('/menus/{menu}/set-visible', [AdminMenu::class, 'setVisible'])->name('menus.setVisible');
+    Route::post('/menus/{menu}/unset-visible', [AdminMenu::class, 'unsetVisible'])->name('menus.unsetVisible');
+
 
     // --------------------------
     // Kategooriate haldus
