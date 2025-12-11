@@ -43,7 +43,7 @@ class MenuController extends Controller
             'header_line2' => 'nullable|string|max:255',
             'header_line3' => 'nullable|string|max:255',
             'background_image' => 'nullable|image|mimes:jpg,jpeg,png,gif,webp|max:2048',
-            'is_visible' => 'nullable|boolean',
+            'is_visible' => 'boolean',
         ]);
 
         $data = $request->only([
@@ -63,7 +63,7 @@ class MenuController extends Controller
 
         Menu::create($data);
 
-        return redirect()->route('dashboard')->with('success', 'Menüü lisatud!');
+        return redirect()->route('menus.index')->with('success', 'Menüü lisatud!');
     }
     
 
@@ -81,7 +81,7 @@ class MenuController extends Controller
     public function edit(Menu $menu)
     {
         $menuTypes = MenuType::all();
-        return view('menus.edit', compact('menu', 'menuTypes'));
+        return view('admin.menus.edit', compact('menu', 'menuTypes'));
     }
 
     /**
