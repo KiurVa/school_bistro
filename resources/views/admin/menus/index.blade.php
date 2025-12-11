@@ -26,6 +26,31 @@
                         <td>{{ $menu->date->format('d.m.Y') }}</td>
                         <td>{{ $menu->type->display_name ?? '-' }}</td>
                         <td>{{ $menu->created_at->format('d.m.Y H:i') }}</td>
+                        <td>
+                            @if($menu->is_visible)
+
+                                {{-- Kui on aktiivne → näita rohelise märgina + vajutatav link, mis muudab mitteaktiivseks --}}
+                                <form action="{{ route('menus.unsetVisible', $menu) }}" method="POST" class="d-inline">
+                                    @csrf
+                                    <button class="btn btn-sm btn-success">
+                                        Aktiivne
+                                    </button>
+                                </form>
+
+                            @else
+
+                                {{-- Kui ei ole aktiivne → nupp, mis muudab aktiivseks --}}
+                                <form action="{{ route('menus.setVisible', $menu) }}" method="POST" class="d-inline">
+                                    @csrf
+                                    <button class="btn btn-sm btn-outline-primary">
+                                        Määra aktiivseks
+                                    </button>
+                                </form>
+
+                            @endif
+                        </td>
+
+
 
                         <td class="text-end">
                             <a href="{{ route('menus.show', $menu) }}" class="btn btn-sm btn-info">Vaata</a>
