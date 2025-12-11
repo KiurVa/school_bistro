@@ -20,7 +20,7 @@ return new class extends Migration
                 ->constrained('categories')
                 ->onDelete('restrict');
             $table->string('name');
-            $table->decimal('full_price', 8, 2);
+            $table->decimal('full_price', 8, 2)->nullable();
             $table->decimal('half_price', 8, 2)->nullable();
             $table->boolean('is_available')->default(true);
             $table->integer('order_index')->default(0);

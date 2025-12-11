@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Menu extends Model
 {
@@ -36,6 +35,6 @@ class Menu extends Model
      */
     public function items()
     {
-        return $this->hasMany(MenuItem::class);
+        return $this->hasMany(MenuItem::class)->orderBy('order_index');
     }
 }

@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes; // 👈 lisa see
 
 class Category extends Model
 {
@@ -30,8 +29,8 @@ class Category extends Model
     /**
      * Kategoorial on mitu toitu (menu_items).
      */
-    public function menuItems()
+    public function items()
     {
-        return $this->hasMany(MenuItem::class, 'category_id');
+        return $this->hasMany(MenuItem::class);
     }
 }

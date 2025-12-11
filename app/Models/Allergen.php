@@ -14,8 +14,8 @@ class Allergen extends Model
     /**
      * Ühel allergeenil võib olla mitu menüü elementi.
      */
-    public function menuItems()
+    public function items()
     {
-        return $this->belongsToMany(MenuItem::class, 'allergen_menu_item')->withTimestamps();
+        return $this->belongsToMany(MenuItem::class, 'allergen_menu_item');
     }
 }

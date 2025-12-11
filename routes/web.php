@@ -7,6 +7,7 @@ use App\Http\Controllers\MenuController;                         // avalik menü
 use App\Http\Controllers\Admin\MenuController as AdminMenu;      // admin menüü
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\AllergenController;
+use App\Http\Controllers\Admin\MenuItemController;
 use App\Http\Controllers\UserManagementController;
 
 
@@ -38,6 +39,23 @@ Route::middleware('auth')->group(function () {
     // Menüü haldus (admin)
     // --------------------------
     Route::resource('menus', AdminMenu::class);
+
+    //Menüü toitude haldus
+
+    Route::prefix('menus/{menu}')->group(function () {
+
+        // BULK lisamine (peab olema enne resource'i!)
+        Route::get('items/bulk', [MenuItemController::class, 'bulkCreate'])
+            ->name('menus.items.bulkCreate');
+
+        Route::post('items/bulk-save', [MenuItemController::class, 'bulkSave'])
+            ->name('menus.items.bulkSave');
+
+        // Ühe toidu haldus
+        Route::resource('items', MenuItemController::class);
+    });
+
+
 
     // --------------------------
     // Kategooriate haldus
@@ -73,5 +91,4 @@ Route::middleware('auth')->group(function () {
     Route::get('/admin/users/{user}/edit', [UserManagementController::class, 'edit'])->name('admin.users.edit');
     Route::put('/admin/users/{user}', [UserManagementController::class, 'update'])->name('admin.users.update');
     Route::delete('/admin/users/{user}', [UserManagementController::class, 'destroy'])->name('admin.users.destroy');
-
 });

@@ -26,7 +26,7 @@ class MenuController extends Controller
         $categories = Category::where('menu_type_id', $menu->menu_type_id)
                               ->where('is_visible', true)
                               ->orderBy('order_index')
-                              ->with(['menuItems' => function($query) use ($menu) {
+                              ->with(['items' => function($query) use ($menu) {
                                   $query->where('menu_id', $menu->id)
                                         ->orderBy('order_index')
                                         ->with('allergens');

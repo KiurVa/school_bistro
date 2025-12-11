@@ -44,7 +44,7 @@
                 </tr>
 
                 {{-- TOIDUD --}}
-                @foreach ($category->menuItems as $item)
+                @foreach ($category->items as $item)
                     <tr class="d-flex  ">
 
                         <td class="col-8 py-2 ps-2 {{ $item->is_available ? '' : 'blur-item' }}">
