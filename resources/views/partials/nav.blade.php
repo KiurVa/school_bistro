@@ -6,9 +6,8 @@
         </a>
 
         {{-- Mobile toggler --}}
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
-                data-bs-target="#mainNavbar" aria-controls="mainNavbar"
-                aria-expanded="false" aria-label="Toggle navigation">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar"
+            aria-controls="mainNavbar" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
 
@@ -32,35 +31,36 @@
 
                 <li class="nav-item">
                     <a class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}"
-                       href="{{ route('dashboard') }}">
+                        href="{{ route('dashboard') }}">
                         Menüühaldus
                     </a>
                 </li>
 
                 <li class="nav-item">
                     <a class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}"
-                       href="{{ route('dashboard') }}">
+                        href="{{ route('dashboard') }}">
                         Kategooria haldus
                     </a>
                 </li>
 
                 <li class="nav-item">
-                    <a class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}"
-                       href="{{ route('dashboard') }}">
+                    <a class="nav-link {{ request()->routeIs('allergens.*') ? 'active' : '' }}"
+                        href="{{ route('allergens.index') }}">
                         Allergeenide haldus
                     </a>
                 </li>
 
+
                 <li class="nav-item">
                     <a class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}"
-                       href="{{ route('dashboard') }}">
+                        href="{{ route('dashboard') }}">
                         Statistika
                     </a>
                 </li>
 
                 <li class="nav-item">
                     <a class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}"
-                       href="{{ route('dashboard') }}">
+                        href="{{ route('dashboard') }}">
                         Kasutajate haldus
                     </a>
                 </li>
