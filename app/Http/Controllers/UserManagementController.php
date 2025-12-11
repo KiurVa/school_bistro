@@ -44,7 +44,7 @@ class UserManagementController extends Controller
             'email'    => 'required|email|max:255|unique:users,email',
             'password' => 'required|string|min:6|confirmed', // password_confirmation
             'is_admin' => 'nullable|boolean',
-            'is_active'=> 'nullable|boolean',
+            'is_active' => 'nullable|boolean',
         ]);
 
         $user = new User();
@@ -84,12 +84,19 @@ class UserManagementController extends Controller
             ]);
         }
 
+        // ei luba iseendalt admin-õigusi ära võtta
+        if ($user->id === auth()->id() && !$request->boolean('is_admin')) {
+            return back()->withErrors([
+                'is_admin' => 'Ei saa võtta endalt admin-õigusi ära.',
+            ]);
+        }
+
         $validated = $request->validate([
             'name'     => 'required|string|max:255',
             'email'    => 'required|email|max:255|unique:users,email,' . $user->id,
             'password' => 'nullable|string|min:6|confirmed',
             'is_admin' => 'nullable|boolean',
-            'is_active'=> 'nullable|boolean',
+            'is_active' => 'nullable|boolean',
         ]);
 
         $user->name      = $validated['name'];
