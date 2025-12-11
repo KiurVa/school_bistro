@@ -2,13 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
     /**
-     * Näita sisselogimise lehte
+     * Näita loginivormi.
      */
     public function showLoginForm()
     {
@@ -16,32 +18,45 @@ class AuthController extends Controller
     }
 
     /**
-     * Logi kasutaja sisse
+     * Logimine: kontrollib parooli JA is_active staatust.
      */
-   public function login(Request $request)
+    public function login(Request $request)
     {
-        $request->validate([
-            'email' => ['required', 'email'],
-            'password' => ['required'],
+        // valideerime sisendi
+        $credentials = $request->validate([
+            'email'    => 'required|email',
+            'password' => 'required|string',
         ]);
 
-        $credentials = $request->only('email', 'password');
+        // otsime kasutaja e-posti järgi
+        $user = User::where('email', $credentials['email'])->first();
 
-        if (Auth::attempt($credentials, $request->boolean('remember'))) {
-            $request->session()->regenerate();
-
-            // Mõlemad (admin ja user) lähevad dashboardile
-            return redirect()->intended(route('dashboard'));
+        // kui kasutajat pole või parool ei klapi
+        if (!$user || !Hash::check($credentials['password'], $user->password)) {
+            return back()
+                ->withErrors(['email' => 'Vale e-post või parool.'])
+                ->onlyInput('email');
         }
 
-        return back()->withErrors([
-            'email' => 'Vale e-post või parool.',
-        ])->onlyInput('email');
+        // KASUTAJA MITTEAKTIIVNE – EI LASE SISSE
+        if (!$user->is_active) {
+            return back()
+                ->withErrors(['email' => 'Sinu konto on mitteaktiivne. Palun võta ühendust administraatoriga.'])
+                ->onlyInput('email');
+        }
+
+        // logime kasutaja sisse
+        Auth::login($user, $request->boolean('remember'));
+
+        // turvalisuse mõttes regenereerime sessiooni
+        $request->session()->regenerate();
+
+        // suuname dashboardile (või intended lehele)
+        return redirect()->intended(route('dashboard'));
     }
 
-
     /**
-     * Logi kasutaja välja
+     * Logout.
      */
     public function logout(Request $request)
     {
@@ -50,6 +65,7 @@ class AuthController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
+        // Pärast väljalogimist -> otse /login lehele
         return redirect('/login');
     }
 }
