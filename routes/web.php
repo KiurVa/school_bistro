@@ -27,25 +27,17 @@ Route::middleware('auth')->group(function () {
     Route::middleware('auth')->resource('menus', \App\Http\Controllers\Admin\MenuController::class);
 
     // Kategooriate haldus
-    Route::get('/dashboard/categories', [CategoryController::class, 'index'])
-        ->name('categories.index');
+    Route::get('/dashboard/categories', [CategoryController::class, 'index'])->name('categories.index');
+    Route::get('/dashboard/categories/create', [CategoryController::class, 'create'])->name('categories.create');
+    Route::post('/dashboard/categories', [CategoryController::class, 'store'])->name('categories.store');
 
-    Route::get('/dashboard/categories/create', [CategoryController::class, 'create'])
-        ->name('categories.create');
+    Route::get('/dashboard/categories/{category}/edit', [CategoryController::class, 'edit'])->name('categories.edit');
+    Route::put('/dashboard/categories/{category}', [CategoryController::class, 'update'])->name('categories.update');
+    Route::delete('/dashboard/categories/{category}', [CategoryController::class, 'destroy'])->name('categories.destroy');
 
-    Route::post('/dashboard/categories', [CategoryController::class, 'store'])
-        ->name('categories.store');
+    Route::post('/dashboard/categories/{category}/move-up', [CategoryController::class, 'moveUp'])->name('categories.move_up');
+    Route::post('/dashboard/categories/{category}/move-down', [CategoryController::class, 'moveDown'])->name('categories.move_down');
 
-
-    Route::get('/dashboard/categories/{category}/edit', [CategoryController::class, 'edit'])
-        ->name('categories.edit');
-
-
-    Route::put('/dashboard/categories/{category}', [CategoryController::class, 'update'])
-        ->name('categories.update');
-
-    Route::delete('/dashboard/categories/{category}', [CategoryController::class, 'destroy'])
-        ->name('categories.destroy');
 });
 // Avalik menüü
 Route::get('/', [MenuController::class, 'show'])->name('menu');
