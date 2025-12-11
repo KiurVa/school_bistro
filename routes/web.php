@@ -8,7 +8,7 @@ use App\Http\Controllers\Admin\MenuController as AdminMenu;      // admin menÃ¼Ã
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\AllergenController;
 use App\Http\Controllers\UserManagementController;
-
+use App\Http\Controllers\Admin\BackgroundImageController;
 
 // ------------------------------
 // Avalik (kasutaja) vaade
@@ -74,4 +74,9 @@ Route::middleware('auth')->group(function () {
     Route::put('/admin/users/{user}', [UserManagementController::class, 'update'])->name('admin.users.update');
     Route::delete('/admin/users/{user}', [UserManagementController::class, 'destroy'])->name('admin.users.destroy');
 
+    // Taustapiltide haldus
+    Route::get('/backgrounds', [BackgroundImageController::class, 'index'])->name('backgrounds.index');
+    Route::post('/backgrounds', [BackgroundImageController::class, 'store'])->name('backgrounds.store');
+    Route::post('/backgrounds/{background}/activate', [BackgroundImageController::class, 'activate'])->name('backgrounds.activate');
+    Route::delete('/backgrounds/{background}', [BackgroundImageController::class, 'destroy'])->name('backgrounds.destroy');
 });

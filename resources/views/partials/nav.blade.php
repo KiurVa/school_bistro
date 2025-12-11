@@ -8,7 +8,7 @@
 
         {{-- Mobile toggler --}}
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar"
-                aria-controls="mainNavbar" aria-expanded="false" aria-label="Toggle navigation">
+            aria-controls="mainNavbar" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
 
@@ -19,7 +19,7 @@
                 {{-- Lisa menüü --}}
                 <li class="nav-item">
                     <a class="nav-link {{ request()->routeIs('menus.create') ? 'active' : '' }}"
-                       href="{{ route('menus.create') }}">
+                        href="{{ route('menus.create') }}">
                         Lisa menüü
                     </a>
                 </li>
@@ -35,7 +35,7 @@
                 {{-- Kategooria haldus --}}
                 <li class="nav-item">
                     <a class="nav-link {{ request()->routeIs('categories.*') ? 'active' : '' }}"
-                       href="{{ route('categories.index') }}">
+                        href="{{ route('categories.index') }}">
                         Kategooria haldus
                     </a>
                 </li>
@@ -43,15 +43,23 @@
                 {{-- Allergeenide haldus --}}
                 <li class="nav-item">
                     <a class="nav-link {{ request()->routeIs('allergens.*') ? 'active' : '' }}"
-                       href="{{ route('allergens.index') }}">
+                        href="{{ route('allergens.index') }}">
                         Allergeenide haldus
                     </a>
                 </li>
-
+                {{-- Taustapiltide haldus – kõigile sisse loginud kasutajatele --}}
+                @auth
+                    <li class="nav-item">
+                        <a class="nav-link {{ request()->routeIs('backgrounds.*') ? 'active' : '' }}"
+                            href="{{ route('backgrounds.index') }}">
+                            Taustapiltide haldus
+                        </a>
+                    </li>
+                @endauth
                 {{-- Statistika (praegu placeholder) --}}
                 <li class="nav-item">
                     <a class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}"
-                       href="{{ route('dashboard') }}">
+                        href="{{ route('dashboard') }}">
                         Statistika
                     </a>
                 </li>
@@ -61,7 +69,7 @@
                     @if (auth()->user()->is_admin)
                         <li class="nav-item">
                             <a class="nav-link {{ request()->routeIs('admin.users.*') ? 'active' : '' }}"
-                               href="{{ route('admin.users.index') }}">
+                                href="{{ route('admin.users.index') }}">
                                 Kasutajate haldus
                             </a>
                         </li>
