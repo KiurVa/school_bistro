@@ -48,7 +48,16 @@ Route::middleware('auth')->group(function () {
 
     Route::prefix('menus/{menu}')->group(function () {
 
-        // BULK lisamine (peab olema enne resource'i!)
+        // Partial (Lisa rida)
+        Route::get('items/row-template', function (\Illuminate\Http\Request $request) {
+            return view('admin.menu_items.partials.food_row', [
+                'category_id' => $request->category_id,
+                'index' => $request->index,
+                'allergens' => \App\Models\Allergen::all(),
+            ]);
+        })->name('menus.items.rowTemplate');
+
+        // BULK lisamine
         Route::get('items/bulk', [MenuItemController::class, 'bulkCreate'])
             ->name('menus.items.bulkCreate');
 
@@ -58,6 +67,9 @@ Route::middleware('auth')->group(function () {
         // Ühe toidu haldus
         Route::resource('items', MenuItemController::class);
     });
+    // Otsing
+    Route::get('/menu-item-search', [MenuItemController::class, 'search'])
+        ->name('menuItem.search');
 
 
 
