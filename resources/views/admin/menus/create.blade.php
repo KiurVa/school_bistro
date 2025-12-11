@@ -73,6 +73,7 @@
             </div>
 
             <button class="btn btn-primary">Salvesta menüü</button>
+            <a href="{{ route('menus.index') }}" class="btn btn-secondary">Katkesta</a>
         </form>
     </div>
 @endsection
