@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Category;
 use App\Models\Menu;
 use App\Models\MenuType;
 use Illuminate\Http\Request;
@@ -79,7 +80,17 @@ class MenuController extends Controller
      */
     public function show(Menu $menu)
     {
-        return view('admin.menus.show', compact('menu'));
+        $categories = Category::where('menu_type_id', $menu->menu_type_id)
+            ->where('is_visible', true)
+            ->orderBy('order_index')
+            ->with(['items' => function ($query) use ($menu) {
+                $query->where('menu_id', $menu->id)
+                    ->orderBy('order_index')
+                    ->with('allergens');
+            }])
+            ->get();
+
+        return view('admin.menus.show', compact('menu', 'categories'));
     }
 
     /**
@@ -103,12 +114,12 @@ class MenuController extends Controller
         $request->validate([
             'menu_type_id' => 'required|exists:menu_types,id',
             'date' => [
-            'required',
-            'date',
-            Rule::unique('menus')
-                ->where('menu_type_id', $request->menu_type_id)
-                ->ignore($menu->id),
-        ],
+                'required',
+                'date',
+                Rule::unique('menus')
+                    ->where('menu_type_id', $request->menu_type_id)
+                    ->ignore($menu->id),
+            ],
             'header_line1' => 'nullable|string|max:255',
             'header_line2' => 'nullable|string|max:255',
             'header_line3' => 'nullable|string|max:255',
@@ -177,7 +188,7 @@ class MenuController extends Controller
             ->with('success', 'Aktiivne menüü uuendatud.');
     }
 
-        /**
+    /**
      * Muuda antud menüü mitteaktiivseks (is_visible = false).
      *
      * Märkus: sel juhul võib jäädagi 0 aktiivset menüüd,
@@ -191,5 +202,4 @@ class MenuController extends Controller
             ->route('menus.index')
             ->with('success', 'Menüü on nüüd mitteaktiivne.');
     }
-
 }
