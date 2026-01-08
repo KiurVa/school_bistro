@@ -7,7 +7,7 @@
 @section('content')
     <div class="container-fluid">
 
-        {{-- FIXED KUUPÄEV --}}
+        {{-- KUUPÄEV --}}
         <div class="text-center">
             <h4>{{ now()->format('d.m.Y') }}</h4>
         </div>

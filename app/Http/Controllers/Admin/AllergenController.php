@@ -54,8 +54,13 @@ class AllergenController extends Controller
      */
     public function destroy(Allergen $allergen)
     {
-        $allergen->menuItems()->detach();
+        $allergen->items()->detach();
+
+        $orderIndex = $allergen->order_index;
         $allergen->delete();
+
+        Allergen::where('order_index', '>', $orderIndex)
+            ->decrement('order_index');
 
         return redirect()
             ->route('allergens.index')
