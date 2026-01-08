@@ -16,7 +16,15 @@ class CategoryController extends Controller
             ->orderBy('order_index')
             ->get();
 
-        return view('admin.categories.index', compact('categories'));
+        $menuTypes = MenuType::all()
+            ->sortBy(function ($type) {
+                $order = ['louna', 'hommik', 'uritus', 'laager'];
+                $position = array_search($type->name, $order, true);
+                return $position === false ? 999 : $position;
+            })
+            ->values();
+
+        return view('admin.categories.index', compact('categories', 'menuTypes'));
     }
 
     /**
@@ -37,14 +45,25 @@ class CategoryController extends Controller
         $request->validate([
             'name'         => 'required|string|max:255',
             'menu_type_id' => 'required|exists:menu_types,id',
+            'order_index'  => 'nullable|integer|min:1',
         ]);
 
-        $maxOrder = Category::max('order_index') ?? 0;
+        $orderIndex = (int) $request->input('order_index');
+
+        if ($orderIndex > 0) {
+            Category::where('menu_type_id', $request->menu_type_id)
+                ->where('order_index', '>=', $orderIndex)
+                ->increment('order_index');
+        } else {
+            $maxOrder = Category::where('menu_type_id', $request->menu_type_id)
+                ->max('order_index') ?? 0;
+            $orderIndex = $maxOrder + 1;
+        }
 
         Category::create([
             'menu_type_id' => $request->menu_type_id,
             'name'         => $request->name,
-            'order_index'  => $maxOrder + 1,
+            'order_index'  => $orderIndex,
             'is_visible'   => $request->has('is_visible'),
         ]);
 
@@ -70,11 +89,40 @@ class CategoryController extends Controller
         $request->validate([
             'name'         => 'required|string|max:255',
             'menu_type_id' => 'required|exists:menu_types,id',
+            'order_index'  => 'required|integer|min:1',
         ]);
+
+        $oldMenuTypeId = $category->menu_type_id;
+        $oldOrderIndex = $category->order_index;
+        $newMenuTypeId = (int) $request->menu_type_id;
+        $newOrderIndex = (int) $request->order_index;
+
+        if ($newMenuTypeId === $oldMenuTypeId) {
+            if ($newOrderIndex !== $oldOrderIndex) {
+                if ($newOrderIndex > $oldOrderIndex) {
+                    Category::where('menu_type_id', $oldMenuTypeId)
+                        ->whereBetween('order_index', [$oldOrderIndex + 1, $newOrderIndex])
+                        ->decrement('order_index');
+                } else {
+                    Category::where('menu_type_id', $oldMenuTypeId)
+                        ->whereBetween('order_index', [$newOrderIndex, $oldOrderIndex - 1])
+                        ->increment('order_index');
+                }
+            }
+        } else {
+            Category::where('menu_type_id', $oldMenuTypeId)
+                ->where('order_index', '>', $oldOrderIndex)
+                ->decrement('order_index');
+
+            Category::where('menu_type_id', $newMenuTypeId)
+                ->where('order_index', '>=', $newOrderIndex)
+                ->increment('order_index');
+        }
 
         $category->update([
             'name'         => $request->name,
             'menu_type_id' => $request->menu_type_id,
+            'order_index'  => $newOrderIndex,
             'is_visible'   => $request->has('is_visible'),
         ]);
 

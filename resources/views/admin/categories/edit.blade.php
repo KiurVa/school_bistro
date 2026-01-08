@@ -31,6 +31,13 @@
             </select>
         </div>
 
+        {{-- Järjekord --}}
+        <div class="mb-3">
+            <label class="form-label">Järjekord</label>
+            <input type="number" name="order_index" class="form-control"
+                   value="{{ old('order_index', $category->order_index) }}" required>
+        </div>
+
         {{-- Nähtav --}}
         <div class="mb-3 form-check">
             <input class="form-check-input" type="checkbox" name="is_visible"
