@@ -11,18 +11,43 @@
         <div class="text-center">
             <h4>{{ now()->format('d.m.Y') }}</h4>
         </div>
-
+        
         {{-- PÄIS (1-3 rida) --}}
-        @if ($menu && ($menu->header_line1 || $menu->header_line2 || $menu->header_line3))
+        @php
+            $h1 = trim($menu->header_line1 ?? '');
+            $h2 = trim($menu->header_line2 ?? '');
+            $h3 = trim($menu->header_line3 ?? '');
+
+            $filled = collect([$h1, $h2, $h3])->filter(fn($v) => $v !== '');
+            $count = $filled->count();
+
+            // Vaikimisi: roheline
+            $c1 = $h1 ? 'text-success' : null;
+            $c2 = $h2 ? 'text-success' : null;
+            $c3 = $h3 ? 'text-success' : null;
+
+            // Erireeglid
+            if ($count === 1 && $h1) {
+                // ainult header 1 -> sinine
+                $c1 = 'text-info';
+            }
+
+            if ($count === 3) {
+                // kõik 3 -> kolmas rida sinine
+                $c3 = 'text-info';
+            }
+        @endphp
+
+        @if ($menu && $count > 0)
             <div class="text-center mb-3">
-
-                @if ($menu->header_line2 && $menu->header_line3)
-                    <h3 class="text-success">{{ Str::upper($menu->header_line2) }}</h3>
-                    <h3 class="text-success">{{ Str::upper($menu->header_line3) }}</h3>
+                @if ($h1)
+                    <h3 class="{{ $c1 }}">{{ Str::upper($h1) }}</h3>
                 @endif
-
-                @if ($menu->header_line1)
-                    <h3 class="text-info">{{ Str::upper($menu->header_line1) }}</h3>
+                @if ($h2)
+                    <h3 class="{{ $c2 }}">{{ Str::upper($h2) }}</h3>
+                @endif
+                @if ($h3)
+                    <h3 class="{{ $c3 }}">{{ Str::upper($h3) }}</h3>
                 @endif
             </div>
         @endif
