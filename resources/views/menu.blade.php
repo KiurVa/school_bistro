@@ -11,7 +11,7 @@
         <div class="text-center">
             <h4>{{ now()->format('d.m.Y') }}</h4>
         </div>
-        
+
         {{-- PÄIS (1-3 rida) --}}
         @php
             $h1 = trim($menu->header_line1 ?? '');
@@ -27,9 +27,16 @@
             $c3 = $h3 ? 'text-success' : null;
 
             // Erireeglid
-            if ($count === 1 && $h1) {
-                // ainult header 1 -> sinine
-                $c1 = 'text-info';
+            if ($count === 1) {
+                if ($h1) {
+                    $c1 = 'text-info';
+                }
+                if ($h2) {
+                    $c2 = 'text-info';
+                }
+                if ($h3) {
+                    $c3 = 'text-info';
+                }
             }
 
             if ($count === 3) {

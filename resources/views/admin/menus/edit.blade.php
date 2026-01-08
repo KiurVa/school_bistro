@@ -3,7 +3,7 @@
 @section('title', 'Muuda menüüd')
 
 @section('content')
-@if ($errors->any())
+    @if ($errors->any())
         <div class="alert alert-danger">
             <ul>
                 @foreach ($errors->all() as $error)
@@ -26,10 +26,8 @@
             {{-- Kuupäev --}}
             <div class="mb-3">
                 <label class="form-label">Kuupäev</label>
-                <input type="date"
-                       name="date"
-                       class="form-control"
-                       value="{{ old('date', $menu->date->format('Y-m-d')) }}">
+                <input type="date" name="date" class="form-control"
+                    value="{{ old('date', $menu->date->format('Y-m-d')) }}">
             </div>
 
             {{-- Menüü tüüp --}}
@@ -47,28 +45,31 @@
             {{-- Päiserida 1 --}}
             <div class="mb-3">
                 <label class="form-label">Päise rida 1</label>
-                <input type="text"
-                       name="header_line1"
-                       class="form-control"
-                       value="{{ old('header_line1', $menu->header_line1) }}">
+                <input type="text" name="header_line1" class="form-control"
+                    value="{{ old('header_line1', $menu->header_line1) }}">
             </div>
 
             {{-- Päiserida 2 --}}
             <div class="mb-3">
                 <label class="form-label">Päise rida 2</label>
-                <input type="text"
-                       name="header_line2"
-                       class="form-control"
-                       value="{{ old('header_line2', $menu->header_line2) }}">
+                <input type="text" name="header_line2" class="form-control"
+                    value="{{ old('header_line2', $menu->header_line2) }}">
             </div>
 
             {{-- Päiserida 3 --}}
             <div class="mb-3">
                 <label class="form-label">Päise rida 3</label>
-                <input type="text"
-                       name="header_line3"
-                       class="form-control"
-                       value="{{ old('header_line3', $menu->header_line3) }}">
+                <input type="text" name="header_line3" class="form-control"
+                    value="{{ old('header_line3', $menu->header_line3) }}">
+            </div>
+
+            <!-- Nähtavus -->
+            <div class="mb-3 form-check">
+                <input type="hidden" name="is_visible" value="0">
+
+                <input type="checkbox" id="is_visible" name="is_visible" class="form-check-input" value="1"
+                    {{ old('is_visible', $menu->is_visible) ? 'checked' : '' }}>
+                <label for="is_visible" class="form-check-label">Tee kohe nähtavaks</label>
             </div>
 
             <button class="btn btn-success">Salvesta</button>
