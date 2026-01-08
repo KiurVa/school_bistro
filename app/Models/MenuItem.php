@@ -32,6 +32,7 @@ class MenuItem extends Model
 
     public function allergens()
     {
-        return $this->belongsToMany(Allergen::class, 'allergen_menu_item');
+        return $this->belongsToMany(Allergen::class, 'allergen_menu_item')
+            ->orderBy('order_index');
     }
 }

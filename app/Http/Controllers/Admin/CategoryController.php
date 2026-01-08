@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Category;
-use App\Models\MenuType;     // 👈 lisa see
+use App\Models\MenuType;  
 use Illuminate\Http\Request;
 
 class CategoryController extends Controller
@@ -84,6 +84,9 @@ class CategoryController extends Controller
 
     public function destroy(Category $category)
     {
+        if ($category->items()->exists()) {
+            return back()->with('error', 'Kategooriat ei saa kustutada, sest sellega on seotud toidud menüüdes.');
+        }
         $category->delete();
 
         return redirect()->route('categories.index')
@@ -123,5 +126,4 @@ class CategoryController extends Controller
 
         return redirect()->route('categories.index');
     }
-
 }

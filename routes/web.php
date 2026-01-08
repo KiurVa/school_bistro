@@ -53,7 +53,7 @@ Route::middleware('auth')->group(function () {
             return view('admin.menu_items.partials.food_row', [
                 'category_id' => $request->category_id,
                 'index' => $request->index,
-                'allergens' => \App\Models\Allergen::all(),
+                'allergens' => \App\Models\Allergen::orderBy('order_index')->get(),
             ]);
         })->name('menus.items.rowTemplate');
 

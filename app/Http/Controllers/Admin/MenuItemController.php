@@ -16,8 +16,10 @@ class MenuItemController extends Controller
      */
     public function create(Menu $menu)
     {
-        $categories = Category::where('menu_type_id', $menu->menu_type_id)->get();
-        $allergens  = Allergen::all();
+        $categories = Category::where('menu_type_id', $menu->menu_type_id)
+            ->orderBy('order_index')
+            ->get();
+        $allergens  = Allergen::orderBy('order_index')->get();
 
         return view('admin.menu_items.create', compact('menu', 'categories', 'allergens'));
     }
@@ -59,8 +61,10 @@ class MenuItemController extends Controller
      */
     public function edit(Menu $menu, MenuItem $item)
     {
-        $categories = Category::where('menu_type_id', $menu->menu_type_id)->get();
-        $allergens  = Allergen::all();
+        $categories = Category::where('menu_type_id', $menu->menu_type_id)
+            ->orderBy('order_index')
+            ->get();
+        $allergens  = Allergen::orderBy('order_index')->get();
 
         return view('admin.menu_items.edit', compact('menu', 'item', 'categories', 'allergens'));
     }
@@ -123,8 +127,10 @@ class MenuItemController extends Controller
 
     public function bulkCreate(Menu $menu)
     {
-        $categories = Category::where('menu_type_id', $menu->menu_type_id)->get();
-        $allergens = Allergen::all();
+        $categories = Category::where('menu_type_id', $menu->menu_type_id)
+            ->orderBy('order_index')
+            ->get();
+        $allergens = Allergen::orderBy('order_index')->get();
         return view('admin.menu_items.bulk_create', compact('menu', 'categories', 'allergens'));
     }
 
