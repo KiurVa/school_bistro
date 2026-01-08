@@ -15,13 +15,13 @@ class CategorySeeder extends Seeder
     {
         // Lõunamenüü kategooriad (menu_type_id = 1)
         $lounaCategories = [
-            ['name' => 'Koolilõuna', 'order' => 10],
-            ['name' => 'Supid', 'order' => 20],
-            ['name' => 'Praed', 'order' => 30],
-            ['name' => 'Lisandid', 'order' => 40],
-            ['name' => 'Kastmed', 'order' => 50],
-            ['name' => 'Salatid', 'order' => 60],
-            ['name' => 'Magustoidud', 'order' => 70],
+            ['name' => 'Koolilõuna', 'order' => 1],
+            ['name' => 'Supid', 'order' => 2],
+            ['name' => 'Praed', 'order' => 3],
+            ['name' => 'Lisandid', 'order' => 4],
+            ['name' => 'Kastmed', 'order' => 5],
+            ['name' => 'Salatid', 'order' => 6],
+            ['name' => 'Magustoidud', 'order' => 7],
         ];
 
         foreach ($lounaCategories as $cat) {
@@ -45,9 +45,9 @@ class CategorySeeder extends Seeder
 
         // Laagrimenüü kategooriad (menu_type_id = 3)
         $laagerCategories = [
-            ['name' => 'Hommikusöök', 'order' => 10],
-            ['name' => 'Lõunasöök', 'order' => 20],
-            ['name' => 'Õhtusöök', 'order' => 30],
+            ['name' => 'Hommikusöök', 'order' => 1],
+            ['name' => 'Lõunasöök', 'order' => 2],
+            ['name' => 'Õhtusöök', 'order' => 3],
         ];
 
         foreach ($laagerCategories as $cat) {

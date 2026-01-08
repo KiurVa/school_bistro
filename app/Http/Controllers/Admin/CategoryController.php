@@ -135,7 +135,14 @@ class CategoryController extends Controller
         if ($category->items()->exists()) {
             return back()->with('error', 'Kategooriat ei saa kustutada, sest sellega on seotud toidud menüüdes.');
         }
+        $menuTypeId = $category->menu_type_id;
+        $orderIndex = $category->order_index;
+
         $category->delete();
+
+        Category::where('menu_type_id', $menuTypeId)
+            ->where('order_index', '>', $orderIndex)
+            ->decrement('order_index');
 
         return redirect()->route('categories.index')
             ->with('success', 'Kategooria kustutatud.');
