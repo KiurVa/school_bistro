@@ -92,7 +92,14 @@
                 @if($typeCategories->isEmpty())
                     <p class="p-3 mb-0">Selles menüü tüübis pole veel kategooriaid.</p>
                 @else
-                    <table class="table mb-0">
+                    <table class="table mb-0" style="table-layout: fixed;">
+                        <colgroup>
+                            <col style="width: 6%;">
+                            <col style="width: 34%;">
+                            <col style="width: 12%;">
+                            <col style="width: 18%;">
+                            <col style="width: 30%;">
+                        </colgroup>
                         <thead>
                             <tr>
                                 <th>#</th>
