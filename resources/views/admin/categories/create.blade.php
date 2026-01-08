@@ -16,6 +16,13 @@
             <input type="text" name="name" class="form-control" required>
         </div>
 
+        {{-- Järjekord --}}
+        <div class="mb-3">
+            <label class="form-label">Järjekord</label>
+            <input type="number" name="order_index" class="form-control"
+                   value="{{ old('order_index') }}">
+        </div>
+
         {{-- Menüü tüüp --}}
         <div class="mb-3">
             <label class="form-label">Menüü tüüp</label>

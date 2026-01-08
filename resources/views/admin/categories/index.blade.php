@@ -79,7 +79,9 @@
     {{-- Nimekirjad menüü tüübi kaupa --}}
     @forelse($menuTypes as $menuType)
         @php
-            $typeCategories = $categories->where('menu_type_id', $menuType->id);
+            $typeCategories = $categories->where('menu_type_id', $menuType->id)
+                ->sortBy('order_index')
+                ->values();
         @endphp
 
         <div class="card mb-4">
@@ -119,21 +121,23 @@
                                             <span class="me-2">{{ $category->order_index }}</span>
 
                                             <div class="btn-group btn-group-sm" role="group">
-                                                <form action="{{ route('categories.move_up', $category) }}" method="POST"
-                                                      class="d-inline">
-                                                    @csrf
-                                                    <button type="submit" class="btn btn-outline-secondary">
-                                                        ↑
-                                                    </button>
-                                                </form>
+                                            <form action="{{ route('categories.move_up', $category) }}" method="POST"
+                                                  class="d-inline">
+                                                @csrf
+                                                <button type="submit" class="btn btn-outline-secondary"
+                                                        {{ $loop->first ? 'disabled' : '' }}>
+                                                    ↑
+                                                </button>
+                                            </form>
 
-                                                <form action="{{ route('categories.move_down', $category) }}" method="POST"
-                                                      class="d-inline">
-                                                    @csrf
-                                                    <button type="submit" class="btn btn-outline-secondary">
-                                                        ↓
-                                                    </button>
-                                                </form>
+                                            <form action="{{ route('categories.move_down', $category) }}" method="POST"
+                                                  class="d-inline">
+                                                @csrf
+                                                <button type="submit" class="btn btn-outline-secondary"
+                                                        {{ $loop->last ? 'disabled' : '' }}>
+                                                    ↓
+                                                </button>
+                                            </form>
                                             </div>
                                         </div>
                                     </td>
