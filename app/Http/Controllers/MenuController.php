@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\Category;
+use App\Models\BackgroundImage;
 use App\Models\Menu;
 use Illuminate\Http\Request;
 
@@ -34,6 +35,10 @@ class MenuController extends Controller
                               ->get();
     }
 
-    return view('menu', compact('menu', 'categories'));
+    $background = BackgroundImage::where('is_active', true)
+        ->orderByDesc('created_at')
+        ->first();
+
+    return view('menu', compact('menu', 'categories', 'background'));
 }
 }

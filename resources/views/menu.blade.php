@@ -4,8 +4,29 @@
 
 @section('hide_nav', true)
 
+@push('styles')
+    @if ($background)
+        <style>
+            body {
+                background-image: url('{{ asset('storage/' . $background->file_path) }}');
+                background-size: cover;
+                background-position: center;
+                background-repeat: no-repeat;
+                background-attachment: fixed;
+            }
+
+            .menu-overlay {
+                min-height: 100vh;
+                background: rgba(255, 255, 255, 0.82);
+                backdrop-filter: blur(2px);
+            }
+        </style>
+    @endif
+@endpush
+
 @section('content')
-    <div class="container-fluid">
+    <div class="menu-overlay">
+        <div class="container-fluid">
 
         {{-- KUUPÄEV --}}
         <div class="text-center">
@@ -120,5 +141,6 @@
 
         @endforelse
 
+        </div>
     </div>
 @endsection
