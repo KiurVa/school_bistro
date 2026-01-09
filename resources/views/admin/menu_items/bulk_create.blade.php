@@ -40,10 +40,26 @@
 
         {{-- Pealkiri --}}
         <h2>
-            Lisa toidud menÃ¼Ã¼sse:
+            Lisa toidud menüüsse:
             <strong>{{ $menu->display_name }}</strong>
             ({{ $menu->date->format('d.m.Y') }})
         </h2>
+
+        @if (session('error'))
+            <div class="alert alert-danger">
+                {{ session('error') }}
+            </div>
+        @endif
+
+        @if ($errors->any())
+            <div class="alert alert-danger">
+                <ul class="mb-0">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
 
         <form action="{{ route('menus.items.bulkSave', $menu) }}" method="POST">
             @csrf
@@ -53,12 +69,29 @@
 
                 <div id="category-{{ $category->id }}">
 
-                    {{-- 5 tÃ¼hja rida automaatselt --}}
-                    @for ($i = 0; $i < 5; $i++)
+                    @php
+                        $categoryItems = $itemsByCategory->get($category->id, collect())->values();
+                        $rowCount = Str::slug($category->name) === 'koolilouna' ? 1 : 3;
+                        $extraRows = max($rowCount - $categoryItems->count(), 0);
+                    @endphp
+
+                    {{-- Olemasolevad read --}}
+                    @foreach ($categoryItems as $itemIndex => $item)
                         @include('admin.menu_items.partials.food_row', [
                             'category_id' => $category->id,
-                            'index' => $i,
+                            'index' => $itemIndex,
                             'allergens' => $allergens,
+                            'item' => $item,
+                        ])
+                    @endforeach
+
+                    {{-- Tühjad read --}}
+                    @for ($i = 0; $i < $extraRows; $i++)
+                        @include('admin.menu_items.partials.food_row', [
+                            'category_id' => $category->id,
+                            'index' => $categoryItems->count() + $i,
+                            'allergens' => $allergens,
+                            'item' => null,
                         ])
                     @endfor
 
@@ -70,7 +103,7 @@
                 </button>
             @endforeach
 
-            <button class="btn btn-primary mt-4">SALVESTA KÃ•IK</button>
+            <button class="btn btn-primary mt-4">SALVESTA KÕIK</button>
 
         </form>
 
@@ -114,19 +147,30 @@
                             return;
                         }
 
+                        const capitalizeFirst = (value) => {
+                            if (!value) return value;
+                            return value.charAt(0).toUpperCase() + value.slice(1);
+                        };
+
                         data.forEach(item => {
                             let div = document.createElement("div");
                             div.className = "suggestion-item";
-                            div.textContent = item.name;
+                            div.textContent = capitalizeFirst(item.name);
 
                             div.onclick = () => {
-                                inputEl.value = item.name;
+                                inputEl.value = capitalizeFirst(item.name);
                                 box.innerHTML = "";
                             };
 
                             box.appendChild(div);
                         });
                     });
+            });
+
+            inputEl.addEventListener("blur", function() {
+                setTimeout(() => {
+                    box.innerHTML = "";
+                }, 100);
             });
         }
 

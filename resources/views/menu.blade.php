@@ -106,7 +106,7 @@
                             @endforeach
                         </td>
 
-                        <td class="col-4 py-2 text-end pe-2">
+                        <td class="col-4 py-2 text-end pe-2 {{ $item->is_available ? '' : 'blur-item' }}">
 
                             {{-- Kui täishind puudub täielikult → ära kuva midagi --}}
                             @if (is_null($item->full_price))

@@ -108,6 +108,7 @@
 
         @endforelse
 
+    <a href="{{ route('menus.items.bulkCreate', $menu) }}" class="btn btn-primary">Muuda kõiki toite</a>
     <a href="{{ route('menus.edit', $menu) }}" class="btn btn-warning">Muuda</a>
     <a href="{{ route('menus.index') }}" class="btn btn-secondary">Tagasi</a>
 
