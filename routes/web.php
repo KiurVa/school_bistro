@@ -10,6 +10,7 @@ use App\Http\Controllers\Admin\AllergenController;
 use App\Http\Controllers\Admin\MenuItemController;
 use App\Http\Controllers\UserManagementController;
 use App\Http\Controllers\Admin\BackgroundImageController;
+use App\Http\Controllers\Admin\StatisticsController;
 
 // ------------------------------
 // Avalik (kasutaja) vaade
@@ -113,4 +114,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/backgrounds', [BackgroundImageController::class, 'store'])->name('backgrounds.store');
     Route::post('/backgrounds/{background}/activate', [BackgroundImageController::class, 'activate'])->name('backgrounds.activate');
     Route::delete('/backgrounds/{background}', [BackgroundImageController::class, 'destroy'])->name('backgrounds.destroy');
+
+    //Statistika
+    Route::get('/statistics', [StatisticsController::class, 'index'])->name('statistics.index');
 });
