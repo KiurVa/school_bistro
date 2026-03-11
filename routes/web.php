@@ -70,6 +70,15 @@ Route::middleware('auth')->group(function () {
     // Üksiku toidu CRUD
     Route::resource('items', MenuItemController::class)
         ->only(['create', 'store', 'edit', 'update','destroy']);
+
+    // TOIDU SAADAVUSE TOGGLE
+    Route::post('items/{item}/set-available',
+        [MenuItemController::class, 'setAvailable'])
+        ->name('items.setAvailable');
+
+    Route::post('items/{item}/unset-available',
+        [MenuItemController::class, 'unsetAvailable'])
+        ->name('items.unsetAvailable');
 });
     // Otsing
     Route::get('/menu-item-search', [MenuItemController::class, 'search'])
