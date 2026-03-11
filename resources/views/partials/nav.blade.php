@@ -54,10 +54,10 @@
                         </a>
                     </li>
                 @endauth
-                {{-- Statistika (praegu placeholder) --}}
+                {{-- Statistika --}}
                 <li class="nav-item">
-                    <a class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}"
-                        href="{{ route('dashboard') }}">
+                    <a class="nav-link {{ request()->routeIs('statistics') ? 'active' : '' }}"
+                        href="{{ route('statistics.index') }}">
                         Statistika
                     </a>
                 </li>
