@@ -25,12 +25,10 @@
                 </li>
 
                 {{-- Menüü haldus --}}
-                <li class="nav-item">
-                    <a class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}"
-                        href="{{ route('menus.index') }}">
-                        Menüühaldus
-                    </a>
-                </li>
+                <a class="nav-link {{ request()->routeIs('menus.*') ? 'active' : '' }}"
+                    href="{{ route('menus.index') }}">
+                    Menüü haldus
+                </a>
 
                 {{-- Kategooria haldus --}}
                 <li class="nav-item">

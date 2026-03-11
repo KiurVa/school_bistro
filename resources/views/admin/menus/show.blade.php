@@ -5,9 +5,9 @@
 @section('content')
     <div class="container mt-4">
 
-    <h1> {{ $menu->type->display_name ?? '-' }}: {{ $menu->date->format('d.m.Y') }}</h1>
+        <h1> {{ $menu->type->display_name ?? '-' }}: {{ $menu->date->format('d.m.Y') }}</h1>
 
-    {{-- PÄIS (1-3 rida) --}}
+        {{-- PÄIS (1-3 rida) --}}
         @php
             $h1 = trim($menu->header_line1 ?? '');
             $h2 = trim($menu->header_line2 ?? '');
@@ -65,7 +65,9 @@
                     <tr class="d-flex  ">
 
                         <td class="col-8 py-2 ps-2 {{ $item->is_available ? '' : 'blur-item' }}">
-                            {{ Str::upper($item->name) }}
+                            <a href="{{ route('items.edit', [$menu, $item]) }}" class="text-decoration-none fw-bold">
+                                {{ Str::upper($item->name) }}
+                            </a>
 
                             {{-- Kuvame kõik allergeenid --}}
                             @foreach ($item->allergens as $allergen)
@@ -107,10 +109,11 @@
             </div>
 
         @endforelse
+        
+        <a href="{{ route('items.create', $menu) }}" class="btn btn-primary">Lisa toit</a>
+        <a href="{{ route('menus.items.bulk', $menu) }}" class="btn btn-primary">Lisa/Muuda kõiki toite</a>
+        <a href="{{ route('menus.edit', $menu) }}" class="btn btn-warning">Muuda</a>
+        <a href="{{ route('menus.index') }}" class="btn btn-secondary">Tagasi</a>
 
-    <a href="{{ route('menus.items.bulkCreate', $menu) }}" class="btn btn-primary">Muuda kõiki toite</a>
-    <a href="{{ route('menus.edit', $menu) }}" class="btn btn-warning">Muuda</a>
-    <a href="{{ route('menus.index') }}" class="btn btn-secondary">Tagasi</a>
-
-</div>
+    </div>
 @endsection

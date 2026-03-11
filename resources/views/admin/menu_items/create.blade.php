@@ -1,23 +1,22 @@
 @extends('layouts.app')
 
-@section('title', 'Toidu muutmine')
+@section('title', 'Toidu lisamine')
 
 @section('content')
 
     <div class="container">
 
-        <h3>Muuda toitu: <strong>{{ $item->name }}</strong></h3>
+        <h3>Toidu lisamine</h3>
 
-        <form id="updateForm" action="{{ route('items.update', [$menu, $item]) }}" method="POST">
+        <form id="createForm" action="{{ route('items.store', $menu) }}" method="POST">
             @csrf
-            @method('PUT')
 
             {{-- CATEGORY --}}
             <div class="mb-3">
                 <label class="form-label">Kategooria</label>
                 <select name="category_id" class="form-select" required>
                     @foreach ($categories as $category)
-                        <option value="{{ $category->id }}" {{ $item->category_id == $category->id ? 'selected' : '' }}>
+                        <option value="{{ $category->id }}" {{ old('category_id') == $category->id ? 'selected' : '' }}>
                             {{ $category->name }}
                         </option>
                     @endforeach
@@ -27,7 +26,7 @@
             {{-- NAME --}}
             <div class="mb-3">
                 <label class="form-label">Toidu nimi</label>
-                <input type="text" name="name" class="form-control" value="{{ $item->name }}" required>
+                <input type="text" name="name" class="form-control" value="{{ old('name') }}" required>
             </div>
 
             {{-- PRICES --}}
@@ -35,13 +34,13 @@
                 <div class="col-md-6 mb-3">
                     <label class="form-label">Täishind (€)</label>
                     <input type="number" step="0.01" name="full_price" class="form-control"
-                        value="{{ $item->full_price }}">
+                        value="{{ old('full_price') }}">
                 </div>
 
                 <div class="col-md-6 mb-3">
                     <label class="form-label">Poolhind (€)</label>
                     <input type="number" step="0.01" name="half_price" class="form-control"
-                        value="{{ $item->half_price }}">
+                        value="{{ old('half_price') }}">
                 </div>
             </div>
 
@@ -49,14 +48,14 @@
             <div class="form-check mb-3">
                 <input type="hidden" name="is_available" value="0">
                 <input type="checkbox" name="is_available" class="form-check-input" value="1"
-                    {{ $item->is_available ? 'checked' : '' }}>
+                    {{ old('is_available', 1) ? 'checked' : '' }}>
                 <label class="form-check-label">Saadaval</label>
             </div>
 
             {{-- ORDER INDEX --}}
             <div class="mb-3">
                 <label class="form-label">Kuva järjekord</label>
-                <input type="number" name="order_index" class="form-control" value="{{ $item->order_index }}">
+                <input type="number" name="order_index" class="form-control" value="{{ old('order_index', 0) }}">
             </div>
 
             {{-- ALLERGENS --}}
@@ -67,7 +66,7 @@
                     @foreach ($allergens as $allergen)
                         <div class="form-check">
                             <input type="checkbox" name="allergens[]" value="{{ $allergen->id }}" class="form-check-input"
-                                {{ $item->allergens->contains($allergen->id) ? 'checked' : '' }}>
+                                {{ in_array($allergen->id, old('allergens', [])) ? 'checked' : '' }}>
                             <label class="form-check-label">
                                 {{ $allergen->code }} – {{ $allergen->name }}
                             </label>
@@ -78,24 +77,15 @@
 
         </form>
 
-        {{-- DELETE FORM --}}
-        <form id="deleteForm" action="{{ route('items.destroy', [$menu, $item]) }}" method="POST"
-            onsubmit="return confirm('Kustuta toit?')">
-            @csrf
-            @method('DELETE')
-        </form>
-
         {{-- BUTTONS --}}
         <div class="d-flex gap-2 mt-3">
-            <button type="submit" form="updateForm" class="btn btn-primary">
-                Uuenda
+            <button type="submit" form="createForm" class="btn btn-primary">
+                Salvesta
             </button>
 
-            <button type="submit" form="deleteForm" class="btn btn-danger">
-                Kustuta
-            </button>
-
-            <a href="{{ route('menus.show', $menu) }}" class="btn btn-secondary">Tagasi</a>
+            <a href="{{ route('menus.show', $menu) }}" class="btn btn-secondary">
+                Tagasi
+            </a>
         </div>
 
     </div>

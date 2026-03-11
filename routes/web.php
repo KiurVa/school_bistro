@@ -46,27 +46,30 @@ Route::middleware('auth')->group(function () {
 
     //Menüü toitude haldus
 
-    Route::prefix('menus/{menu}')->group(function () {
+    Route::scopeBindings()->prefix('menus/{menu}')->group(function () {
 
-        // Partial (Lisa rida)
-        Route::get('items/row-template', function (\Illuminate\Http\Request $request) {
-            return view('admin.menu_items.partials.food_row', [
-                'category_id' => $request->category_id,
-                'index' => $request->index,
-                'allergens' => \App\Models\Allergen::orderBy('order_index')->get(),
-            ]);
-        })->name('menus.items.rowTemplate');
+    // Partial (Lisa rida bulk editorisse)
+    Route::get('items/row-template', function (\Illuminate\Http\Request $request) {
+        return view('admin.menu_items.partials.food_row', [
+            'category_id' => $request->category_id,
+            'index' => $request->index,
+            'allergens' => \App\Models\Allergen::orderBy('order_index')->get(),
+        ]);
+    })->name('menus.items.rowTemplate');
 
-        // BULK lisamine
-        Route::get('items/bulk', [MenuItemController::class, 'bulkCreate'])
-            ->name('menus.items.bulkCreate');
 
-        Route::post('items/bulk-save', [MenuItemController::class, 'bulkSave'])
-            ->name('menus.items.bulkSave');
+    // BULK editor
+    Route::get('items/bulk', [MenuItemController::class, 'bulkCreate'])
+        ->name('menus.items.bulk');
 
-        // Ühe toidu haldus
-        Route::resource('items', MenuItemController::class);
-    });
+    Route::post('items/bulk-save', [MenuItemController::class, 'bulkSave'])
+        ->name('menus.items.bulkSave');
+
+
+    // Üksiku toidu CRUD
+    Route::resource('items', MenuItemController::class)
+        ->only(['create', 'store', 'edit', 'update','destroy']);
+});
     // Otsing
     Route::get('/menu-item-search', [MenuItemController::class, 'search'])
         ->name('menuItem.search');

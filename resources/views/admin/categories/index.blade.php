@@ -7,20 +7,6 @@
 
         <h1 class="mb-4">Kategooriate haldus</h1>
 
-        {{-- Teated --}}
-        @if (session('success'))
-            <div class="alert alert-success">
-                {{ session('success') }}
-            </div>
-        @endif
-
-        {{-- Vead --}}
-        @if (session('error'))
-            <div class="alert alert-danger">
-                {{ session('error') }}
-            </div>
-        @endif
-
         {{-- Lisamisvorm --}}
         <div class="card mb-4">
             <div class="card-header">

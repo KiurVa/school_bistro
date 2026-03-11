@@ -4,20 +4,6 @@
     <div class="container mt-4">
         <h1 class="mb-4">Allergeenide haldus</h1>
 
-        {{-- Teated --}}
-        @if (session('success'))
-            <div class="alert alert-success">
-                {{ session('success') }}
-            </div>
-        @endif
-
-        {{-- Vead --}}
-        @if (session('error'))
-            <div class="alert alert-danger">
-                {{ session('error') }}
-            </div>
-        @endif
-
         {{-- Lisamisvorm --}}
         <div class="card mb-4">
             <div class="card-header">

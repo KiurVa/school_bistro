@@ -39,26 +39,26 @@ class MenuItemController extends Controller
             'is_available' => 'boolean',
             'order_index' => 'nullable|integer',
             'allergens'   => 'array',
+            'allergens.*' => 'exists:allergens,id',
         ], [
             'full_price.max' => 'Täishind ei tohi olla suurem kui 999999.99.',
             'half_price.max' => 'Poolhind ei tohi olla suurem kui 999999.99.',
         ]);
 
         $item = $menu->items()->create([
-            'category_id' => $request->category_id,
-            'name'        => $request->name,
-            'full_price'  => $request->full_price,
-            'half_price'  => $request->half_price,
-            'is_available' => $request->is_available ?? true,
-            'order_index' => $request->order_index ?? 0,
+            'category_id'  => $request->category_id,
+            'name'         => $request->name,
+            'full_price'   => $request->full_price,
+            'half_price'   => $request->half_price,
+            'is_available' => $request->boolean('is_available'),
+            'order_index'  => $request->order_index ?? 0,
         ]);
 
-        // Salvestame allergeenid pivot tabelisse
-        if ($request->filled('allergens')) {
-            $item->allergens()->sync($request->allergens);
-        }
+        $item->allergens()->sync($request->allergens ?? []);
 
-        return back()->with('success', 'Toit lisatud!');
+        return redirect()
+            ->route('menus.show', $menu)
+            ->with('success', 'Toit lisatud!');
     }
 
     /*
@@ -66,12 +66,21 @@ class MenuItemController extends Controller
      */
     public function edit(Menu $menu, MenuItem $item)
     {
+        // Kontroll, et item kuulub sellele menüüle
+        abort_unless($item->menu_id === $menu->id, 404);
+
         $categories = Category::where('menu_type_id', $menu->menu_type_id)
             ->orderBy('order_index')
             ->get();
-        $allergens  = Allergen::orderBy('order_index')->get();
 
-        return view('admin.menu_items.edit', compact('menu', 'item', 'categories', 'allergens'));
+        $allergens = Allergen::orderBy('order_index')->get();
+
+        return view('admin.menu_items.edit', [
+            'menu' => $menu,
+            'item' => $item,
+            'categories' => $categories,
+            'allergens' => $allergens,
+        ]);
     }
 
     /*
@@ -79,6 +88,8 @@ class MenuItemController extends Controller
      */
     public function update(Request $request, Menu $menu, MenuItem $item)
     {
+        abort_unless($item->menu_id === $menu->id, 404);
+
         $request->validate([
             'category_id' => 'required|exists:categories,id',
             'name'        => 'required|string|max:255',
@@ -93,17 +104,19 @@ class MenuItemController extends Controller
         ]);
 
         $item->update([
-            'category_id' => $request->category_id,
-            'name'        => $request->name,
-            'full_price'  => $request->full_price,
-            'half_price'  => $request->half_price,
-            'is_available' => $request->is_available ?? true,
-            'order_index' => $request->order_index ?? 0,
+            'category_id'  => $request->category_id,
+            'name'         => $request->name,
+            'full_price'   => $request->full_price,
+            'half_price'   => $request->half_price,
+            'is_available' => $request->boolean('is_available'),
+            'order_index'  => $request->order_index ?? 0,
         ]);
 
         $item->allergens()->sync($request->allergens ?? []);
 
-        return back()->with('success', 'Toit uuendatud!');
+        return redirect()
+            ->route('menus.show', $menu)
+            ->with('success', 'Toit uuendatud!');
     }
 
     /*
@@ -114,7 +127,9 @@ class MenuItemController extends Controller
         $item->allergens()->detach();
         $item->delete();
 
-        return back()->with('success', 'Toit kustutatud!');
+        return redirect()
+            ->route('menus.show', $menu)
+            ->with('success', 'Toit edukalt kustutatud');
     }
 
     public function search(Request $request)

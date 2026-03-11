@@ -17,7 +17,8 @@
                     <th>Kuupäev</th>
                     <th>Tüüp</th>
                     <th>Loodud</th>
-                    <th class="text-end">Tegevused</th>
+                    <th>Aktiivsus</th>
+                    <th class="text-center">Tegevused</th>
                 </tr>
             </thead>
             <tbody>
@@ -48,8 +49,12 @@
 
 
 
-                        <td class="text-end">
-                            <a href="{{ route('menus.items.bulkCreate', $menu) }}" class="btn btn-sm btn-primary">
+                        <td class="text-center">
+
+                            <a href="{{ route('items.create', $menu) }}" class="btn btn-sm btn-primary">
+                                Lisa toit
+                            </a>
+                            <a href="{{ route('menus.items.bulk', $menu) }}" class="btn btn-sm btn-primary">
                                 Lisa toidud
                             </a>
                             <a href="{{ route('menus.show', $menu) }}" class="btn btn-sm btn-info">Vaata</a>

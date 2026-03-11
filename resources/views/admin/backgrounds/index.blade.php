@@ -4,23 +4,6 @@
 <div class="container mt-4">
     <h1 class="mb-4">Taustapiltide haldus</h1>
 
-    {{-- Teated --}}
-    @if(session('success'))
-        <div class="alert alert-success">
-            {{ session('success') }}
-        </div>
-    @endif
-
-    @if($errors->any())
-        <div class="alert alert-danger">
-            <ul class="mb-0">
-                @foreach($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
-        </div>
-    @endif
-
     {{-- Uue pildi üleslaadimine --}}
     <div class="card mb-4">
         <div class="card-header">
