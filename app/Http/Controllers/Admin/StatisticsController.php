@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Category;
+use App\Models\Menu;
 use App\Models\MenuItem;
 use App\Models\MenuType;
 use Illuminate\Http\Request;
@@ -12,12 +14,42 @@ class StatisticsController extends Controller
 {
     public function index(Request $request)
     {
+        // Otsing toidu ajaloo jaoks
         $search = trim($request->get('search', ''));
 
+        // TOP 10 filtrid
+        $topCategory = $request->get('top_category');
+        $topMenuType = $request->get('top_menu_type');
+
+        // Filtrite valikud vaatesse
+        $topCategories = Category::query()
+            ->orderBy('name')
+            ->get();
+
+        $topMenuTypes = MenuType::query()
+            ->orderBy('display_name')
+            ->get();
+
+        // -----------------------------------
         // TOP 10 populaarseimad toidud
-        $popularFoods = MenuItem::query()
+        // -----------------------------------
+
+        $popularFoodsQuery = MenuItem::query()
+            ->join('menus', 'menu_items.menu_id', '=', 'menus.id');
+
+        // Filtreerimine kategooria järgi
+        if (!empty($topCategory)) {
+            $popularFoodsQuery->where('menu_items.category_id', $topCategory);
+        }
+
+        // Filtreerimine menüütüübi järgi
+        if (!empty($topMenuType)) {
+            $popularFoodsQuery->where('menus.menu_type_id', $topMenuType);
+        }
+
+        $popularFoods = $popularFoodsQuery
             ->selectRaw("
-                LOWER(REPLACE(REPLACE(name, ' ', ''), '-', '')) as normalized_name,
+                LOWER(REPLACE(REPLACE(menu_items.name, ' ', ''), '-', '')) as normalized_name,
                 COUNT(*) as total
             ")
             ->groupBy('normalized_name')
@@ -25,15 +57,26 @@ class StatisticsController extends Controller
             ->limit(10)
             ->get();
 
-        $popularFoods->transform(function ($food) {
-
-            $variant = MenuItem::query()
-                ->select('name', DB::raw('COUNT(*) as c'))
+        // Leiame iga grupi kõige sagedamini esinenud nimekuju
+        $popularFoods->transform(function ($food) use ($topCategory, $topMenuType) {
+            $variantQuery = MenuItem::query()
+                ->join('menus', 'menu_items.menu_id', '=', 'menus.id')
+                ->select('menu_items.name', DB::raw('COUNT(*) as c'))
                 ->whereRaw(
-                    "LOWER(REPLACE(REPLACE(name, ' ', ''), '-', '')) = ?",
+                    "LOWER(REPLACE(REPLACE(menu_items.name, ' ', ''), '-', '')) = ?",
                     [$food->normalized_name]
-                )
-                ->groupBy('name')
+                );
+
+            if (!empty($topCategory)) {
+                $variantQuery->where('menu_items.category_id', $topCategory);
+            }
+
+            if (!empty($topMenuType)) {
+                $variantQuery->where('menus.menu_type_id', $topMenuType);
+            }
+
+            $variant = $variantQuery
+                ->groupBy('menu_items.name')
                 ->orderByDesc('c')
                 ->first();
 
@@ -42,7 +85,10 @@ class StatisticsController extends Controller
             return $food;
         });
 
-        // Toidu ajalugu
+        // -----------------------------------
+        // Toidu esinemise ajalugu
+        // -----------------------------------
+
         $foodHistory = collect();
 
         if ($search !== '') {
@@ -59,9 +105,11 @@ class StatisticsController extends Controller
                 ->sortByDesc(fn ($item) => optional($item->menu)->date)
                 ->values();
         }
-        
 
-        // Menüütüüpide statistika
+        // -----------------------------------
+        // Menüütüüpide kasutusstatistika
+        // -----------------------------------
+
         $menuTypeStats = MenuType::query()
             ->select(
                 'menu_types.id',
@@ -73,11 +121,49 @@ class StatisticsController extends Controller
             ->orderByDesc('usage_count')
             ->get();
 
+        // -----------------------------------
+        // Päise kaartide andmed
+        // -----------------------------------
+
+        $latestMenu = Menu::query()
+            ->orderByDesc('date')
+            ->first();
+
+        $uniqueFoodsCount = MenuItem::query()
+            ->selectRaw("LOWER(REPLACE(REPLACE(name, ' ', ''), '-', '')) as normalized_name")
+            ->distinct()
+            ->count();
+
+        $summary = [
+            // Menüüsid kokku
+            'menu_count' => Menu::count(),
+
+            // Viimase menüü kuupäev
+            'latest_menu_date' => optional($latestMenu?->date)->format('d.m.Y'),
+
+            // Erinevate toitude arv
+            'unique_foods_count' => $uniqueFoodsCount,
+
+            // Kõige populaarsem toit (vastavalt TOP tabeli loogikale)
+            'most_popular_food' => $popularFoods->first()->display_name ?? '-',
+
+            // Menüütüüpide arv
+            'menu_type_count' => $topMenuTypes->count(),
+
+            // Kõige sagedamini kasutatud menüütüüp
+            'most_used_menu_type' => $menuTypeStats->first()->display_name ?? '-',
+        ];
+
         return view('admin.statistics.index', compact(
             'popularFoods',
             'foodHistory',
             'menuTypeStats',
-            'search'
+            'search',
+            'topCategories',
+            'topCategory',
+            'topMenuTypes',
+            'topMenuType',
+            'summary'
         ));
     }
 }

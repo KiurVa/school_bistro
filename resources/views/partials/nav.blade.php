@@ -56,7 +56,7 @@
                 @endauth
                 {{-- Statistika --}}
                 <li class="nav-item">
-                    <a class="nav-link {{ request()->routeIs('statistics') ? 'active' : '' }}"
+                    <a class="nav-link {{ request()->routeIs('statistics*') ? 'active' : '' }}"
                         href="{{ route('statistics.index') }}">
                         Statistika
                     </a>

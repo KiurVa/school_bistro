@@ -11,6 +11,54 @@
             </div>
         </div>
 
+        {{-- Päise kokkuvõtte kaardid --}}
+        <div class="row g-3 mb-4">
+            <div class="col-md-6 col-xl-4">
+                <div class="card shadow-sm border-0 h-100">
+                    <div class="card-body py-3">
+                        <div class="text-muted small mb-1">Menüüsid kokku</div>
+                        <div class="fs-4 fw-bold">{{ $summary['menu_count'] }}</div>
+                        <div class="small text-muted mt-2">
+                            Viimane menüü:
+                            <span class="fw-semibold text-dark">
+                                {{ $summary['latest_menu_date'] ?? '-' }}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-xl-4">
+                <div class="card shadow-sm border-0 h-100">
+                    <div class="card-body py-3">
+                        <div class="text-muted small mb-1">Erinevaid toite</div>
+                        <div class="fs-4 fw-bold">{{ $summary['unique_foods_count'] }}</div>
+                        <div class="small text-muted mt-2">
+                            Kõige populaarsem:
+                            <span class="fw-semibold text-dark">
+                                {{ $summary['most_popular_food'] ?? '-' }}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-xl-4">
+                <div class="card shadow-sm border-0 h-100">
+                    <div class="card-body py-3">
+                        <div class="text-muted small mb-1">Menüütüüpe kokku</div>
+                        <div class="fs-4 fw-bold">{{ $summary['menu_type_count'] }}</div>
+                        <div class="small text-muted mt-2">
+                            Kõige sagedasem:
+                            <span class="fw-semibold text-dark">
+                                {{ $summary['most_used_menu_type'] ?? '-' }}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         {{-- Populaarseimad toidud --}}
         <div class="card shadow-sm border-0 mb-4">
             <div class="card-header bg-white border-0 pt-4 pb-2">
@@ -18,6 +66,36 @@
             </div>
 
             <div class="card-body">
+                <form method="GET" action="{{ route('statistics.index') }}" class="row g-2 mb-3">
+                    <div class="col-md-4">
+                        <select name="top_category" class="form-select" onchange="this.form.submit()">
+                            <option value="">Kõik kategooriad</option>
+                            @foreach ($topCategories as $category)
+                                <option value="{{ $category->id }}"
+                                    {{ (string) $topCategory === (string) $category->id ? 'selected' : '' }}>
+                                    {{ $category->name }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div class="col-md-4">
+                        <select name="top_menu_type" class="form-select" onchange="this.form.submit()">
+                            <option value="">Kõik menüütüübid</option>
+                            @foreach ($topMenuTypes as $menuType)
+                                <option value="{{ $menuType->id }}"
+                                    {{ (string) $topMenuType === (string) $menuType->id ? 'selected' : '' }}>
+                                    {{ $menuType->display_name }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    @if ($search)
+                        <input type="hidden" name="search" value="{{ $search }}">
+                    @endif
+                </form>
+
                 @if ($popularFoods->isEmpty())
                     <div class="alert alert-light border mb-0">
                         Andmeid pole veel.
@@ -131,40 +209,6 @@
                                                 <span class="text-muted">-</span>
                                             @endforelse
                                         </td>
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
-                @endif
-            </div>
-        </div>
-
-        {{-- Menüütüüpide kasutus --}}
-        <div class="card shadow-sm border-0">
-            <div class="card-header bg-white border-0 pt-4 pb-2">
-                <h2 class="h5 mb-0">Menüütüüpide kasutusstatistika</h2>
-            </div>
-
-            <div class="card-body">
-                @if ($menuTypeStats->isEmpty())
-                    <div class="alert alert-light border mb-0">
-                        Andmeid pole veel.
-                    </div>
-                @else
-                    <div class="table-responsive">
-                        <table class="table table-hover align-middle mb-0">
-                            <thead class="table-light">
-                                <tr>
-                                    <th>Menüütüüp</th>
-                                    <th class="text-end" style="width: 180px;">Kasutuskordi</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach ($menuTypeStats as $type)
-                                    <tr>
-                                        <td>{{ $type->display_name }}</td>
-                                        <td class="text-end fw-semibold">{{ $type->usage_count }}</td>
                                     </tr>
                                 @endforeach
                             </tbody>
