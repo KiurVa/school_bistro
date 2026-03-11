@@ -8,12 +8,13 @@ use App\Models\Menu;
 use App\Models\MenuItem;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
 class MenuItemController extends Controller
 {
     /*
-     * Näita toidu lisamise vormi
+     * NÃ¤ita toidu lisamise vormi
      */
     public function create(Menu $menu)
     {
@@ -39,7 +40,7 @@ class MenuItemController extends Controller
             'order_index' => 'nullable|integer',
             'allergens'   => 'array',
         ], [
-            'full_price.max' => 'Täishind ei tohi olla suurem kui 999999.99.',
+            'full_price.max' => 'TÃ¤ishind ei tohi olla suurem kui 999999.99.',
             'half_price.max' => 'Poolhind ei tohi olla suurem kui 999999.99.',
         ]);
 
@@ -87,7 +88,7 @@ class MenuItemController extends Controller
             'order_index' => 'nullable|integer',
             'allergens'   => 'array',
         ], [
-            'full_price.max' => 'Täishind ei tohi olla suurem kui 999999.99.',
+            'full_price.max' => 'TÃ¤ishind ei tohi olla suurem kui 999999.99.',
             'half_price.max' => 'Poolhind ei tohi olla suurem kui 999999.99.',
         ]);
 
@@ -138,18 +139,25 @@ class MenuItemController extends Controller
         $categories = Category::where('menu_type_id', $menu->menu_type_id)
             ->orderBy('order_index')
             ->get();
+
         $itemsByCategory = $menu->items()
             ->with('allergens')
             ->orderBy('order_index')
             ->get()
             ->groupBy('category_id');
+
         $allergens = Allergen::orderBy('order_index')->get();
-        return view('admin.menu_items.bulk_create', compact('menu', 'categories', 'allergens', 'itemsByCategory'));
+
+        return view('admin.menu_items.bulk_create', [
+            'menu' => $menu,
+            'categories' => $categories,
+            'itemsByCategory' => $itemsByCategory,
+            'allergens' => $allergens,
+        ]);
     }
 
     public function bulkSave(Request $request, Menu $menu)
     {
-        // Kontroll, et items[] üldse olemas on
         if (!$request->has('items')) {
             return back()->with('error', 'Toite ei leitud.');
         }
@@ -157,10 +165,11 @@ class MenuItemController extends Controller
         $validator = Validator::make($request->all(), [
             'items' => 'array',
             'items.*.*.id' => 'nullable|integer',
+            'items.*.*.name' => 'nullable|string|max:255',
             'items.*.*.full_price' => 'nullable|numeric|max:999999.99',
             'items.*.*.half_price' => 'nullable|numeric|max:999999.99',
         ], [
-            'items.*.*.full_price.max' => 'Täishind ei tohi olla suurem kui 999999.99.',
+            'items.*.*.full_price.max' => 'TÃ¤ishind ei tohi olla suurem kui 999999.99.',
             'items.*.*.half_price.max' => 'Poolhind ei tohi olla suurem kui 999999.99.',
         ]);
 
@@ -170,54 +179,81 @@ class MenuItemController extends Controller
                 ->withInput();
         }
 
-        foreach ($request->items as $categoryId => $rows) {
+        DB::transaction(function () use ($request, $menu) {
 
-            foreach ($rows as $row) {
-                $name = $row['name'] ?? null;
-                $itemId = $row['id'] ?? null;
+            foreach ($request->items as $categoryId => $rows) {
 
-                // Kui nimi tühi – jätame vahele
-                if (empty($name)) {
-                    continue;
-                }
+                foreach ($rows as $row) {
 
-                $item = null;
-                if ($itemId) {
-                    $item = $menu->items()->where('id', $itemId)->first();
-                    if ($item) {
-                        $item->update([
-                            'category_id' => $categoryId,
-                            'name'        => $name,
-                            'full_price'  => $row['full_price'] ?? null,
-                            'half_price'  => $row['half_price'] ?? null,
-                            'is_available' => isset($row['is_available']) ? 1 : 0,
+                    $itemId = $row['id'] ?? null;
+                    $name   = trim($row['name'] ?? '');
+
+                    /*
+                 * DELETE
+                 */
+                    if (!empty($row['delete']) && $itemId) {
+
+                        MenuItem::where('menu_id', $menu->id)
+                            ->find($itemId)
+                            ?->delete();
+
+                        continue;
+                    }
+
+                    /*
+                 * Kui nimi tÃ¼hi â†’ ignoreeri rida
+                 */
+                    if ($name === '') {
+                        continue;
+                    }
+
+                    $item = null;
+
+                    /*
+                 * UPDATE olemasolev kirje
+                 */
+                    if ($itemId) {
+
+                        $item = MenuItem::where('menu_id', $menu->id)
+                            ->find($itemId);
+
+                        if ($item) {
+
+                            $item->update([
+                                'category_id'  => $categoryId,
+                                'name'         => $name,
+                                'full_price'   => $row['full_price'] ?? null,
+                                'half_price'   => $row['half_price'] ?? null,
+                                'is_available' => isset($row['is_available']),
+                            ]);
+                        }
+                    }
+
+                    /*
+                 * CREATE uus kirje
+                 */
+                    if (!$item) {
+
+                        $item = $menu->items()->create([
+                            'category_id'  => $categoryId,
+                            'name'         => $name,
+                            'full_price'   => $row['full_price'] ?? null,
+                            'half_price'   => $row['half_price'] ?? null,
+                            'is_available' => isset($row['is_available']),
+                            'order_index'  => 0
                         ]);
                     }
-                }
 
-                if (!$item) {
-                    // Loo toidukirje
-                    $item = $menu->items()->create([
-                        'category_id' => $categoryId,
-                        'name'        => $name,
-                        'full_price'  => $row['full_price'] ?? null,
-                        'half_price'  => $row['half_price'] ?? null,
-                        'is_available' => isset($row['is_available']) ? 1 : 0,
-                        'order_index' => 0, // bulk lisamisel ei pane sortimist
-                    ]);
-                }
-
-                // Kui allergeenid on lisatud – lisa pivotisse
-                if (!empty($row['allergens'])) {
-                    $item->allergens()->sync($row['allergens']);
-                } else {
-                    $item->allergens()->sync([]);
+                    /*
+                 * ALLERGENID
+                 */
+                    $item->allergens()->sync($row['allergens'] ?? []);
                 }
             }
-        }
+        });
 
         return redirect()
             ->route('menus.show', $menu)
-            ->with('success', 'Kõik toidud on edukalt salvestatud!');
+            ->with('success', 'Toidud salvestati edukalt!');
     }
 }

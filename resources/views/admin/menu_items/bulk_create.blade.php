@@ -40,7 +40,7 @@
 
         {{-- Pealkiri --}}
         <h2>
-            Lisa toidud menüüsse:
+            Lisa toidud menÃ¼Ã¼sse:
             <strong>{{ $menu->display_name }}</strong>
             ({{ $menu->date->format('d.m.Y') }})
         </h2>
@@ -85,7 +85,7 @@
                         ])
                     @endforeach
 
-                    {{-- Tühjad read --}}
+                    {{-- TÃ¼hjad read --}}
                     @for ($i = 0; $i < $extraRows; $i++)
                         @include('admin.menu_items.partials.food_row', [
                             'category_id' => $category->id,
@@ -98,14 +98,13 @@
                 </div>
 
                 {{-- Lisa rida nupp --}}
-                <button type="button" class="btn btn-sm btn-secondary mt-2" onclick="addRow({{ $category->id }})">
-                    + Lisa rida
-                </button>
+                    <button type="button" class="btn btn-sm btn-secondary mt-2" onclick="addRow({{ $category->id }})">
+                        + Lisa rida
+                    </button>
             @endforeach
 
-            <button class="btn btn-primary mt-4">SALVESTA KÕIK</button>
-
-        </form>
+            <button class="btn btn-primary mt-2">Salvesta</button>
+    </form>
 
     </div>
 
