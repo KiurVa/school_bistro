@@ -54,10 +54,11 @@
                 {{-- KATEGOORIA PÄIS --}}
                 <tr class="d-flex">
                     <td
-                        class="col-8 py-2 ps-2 fw-bold {{ Str::lower($category->name) === 'koolilõuna' ? 'text-danger' : '' }}">
+                        class="col-6 py-2 ps-2 fw-bold {{ Str::lower($category->name) === 'koolilõuna' ? 'text-danger' : '' }}">
                         {{ Str::upper($category->name) }}
                     </td>
-                    <td class="col-4"></td>
+                    <td class="col-3"></td>
+                    <td class="col-2"></td>
                 </tr>
 
                 {{-- TOIDUD --}}
@@ -75,7 +76,7 @@
                             @endforeach
                         </td>
 
-                        <td class="col-4 py-2 text-end pe-2">
+                        <td class="col-2 py-2 text-end pe-2">
 
                             {{-- Kui täishind puudub täielikult → ära kuva midagi --}}
                             @if (is_null($item->full_price))
@@ -96,6 +97,27 @@
                             @endif
 
                         </td>
+                        <td class="col-1 text-end pe-2">
+
+                            @if ($item->is_available)
+                                <form action="{{ route('items.unsetAvailable', [$menu, $item]) }}" method="POST"
+                                    class="d-inline">
+                                    @csrf
+                                    <button class="btn btn-sm btn-success">
+                                        Saadaval
+                                    </button>
+                                </form>
+                            @else
+                                <form action="{{ route('items.setAvailable', [$menu, $item]) }}" method="POST"
+                                    class="d-inline">
+                                    @csrf
+                                    <button class="btn btn-sm btn-outline-secondary">
+                                        Otsas
+                                    </button>
+                                </form>
+                            @endif
+
+                        </td>
 
                     </tr>
                 @endforeach
@@ -109,7 +131,7 @@
             </div>
 
         @endforelse
-        
+
         <a href="{{ route('items.create', $menu) }}" class="btn btn-primary">Lisa toit</a>
         <a href="{{ route('menus.items.bulk', $menu) }}" class="btn btn-primary">Lisa/Muuda kõiki toite</a>
         <a href="{{ route('menus.edit', $menu) }}" class="btn btn-warning">Muuda</a>

@@ -271,4 +271,26 @@ class MenuItemController extends Controller
             ->route('menus.show', $menu)
             ->with('success', 'Toidud salvestati edukalt!');
     }
+
+    public function setAvailable(Menu $menu, MenuItem $item)
+    {
+        abort_unless($item->menu_id === $menu->id, 404);
+
+        $item->update(['is_available' => true]);
+
+        return redirect()
+            ->route('menus.show', $menu)
+            ->with('success', 'Toit on nüüd saadaval.');
+    }
+
+    public function unsetAvailable(Menu $menu, MenuItem $item)
+    {
+        abort_unless($item->menu_id === $menu->id, 404);
+
+        $item->update(['is_available' => false]);
+
+        return redirect()
+            ->route('menus.show', $menu)
+            ->with('success', 'Toit märgiti mitte saadavaks.');
+    }
 }

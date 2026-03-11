@@ -3,21 +3,8 @@
 @section('title', 'Loo menüü')
 
 @section('content')
-    @if ($errors->any())
-        <div class="alert alert-danger">
-            <ul>
-                @foreach ($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
-        </div>
-    @endif
     <div class="container">
         <h1>Lisa uus menüü</h1>
-
-        @if (session('success'))
-            <div class="alert alert-success">{{ session('success') }}</div>
-        @endif
 
         <!-- Vorm menüü loomiseks -->
         <form action="{{ route('menus.store') }}" method="POST" enctype="multipart/form-data">
