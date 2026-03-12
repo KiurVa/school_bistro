@@ -18,7 +18,7 @@ class MenuController extends Controller
     {
         $menus = Menu::with('type')
             ->orderBy('date', 'desc')
-            ->paginate(20); // lehekülgede kaupa
+            ->paginate(20);
 
         return view('admin.menus.index', compact('menus'));
     }
@@ -36,8 +36,7 @@ class MenuController extends Controller
     /**
      * Salvesta uus menüü andmebaasi.
      *
-     * Märkus: kui uus menüü märgitakse nähtavaks (is_visible = true),
-     * siis tehakse kõik teised menüüd mitte nähtavaks.
+     * Kui uus menüü märgitakse nähtavaks, siis tehakse kõik teised menüüd mitte nähtavaks.
      */
     public function store(Request $request)
     {
@@ -50,7 +49,6 @@ class MenuController extends Controller
             'is_visible'   => 'boolean',
         ]);
 
-        // Võtame ainult lubatud väljad
         $data = $request->only([
             'menu_type_id',
             'date',
@@ -59,11 +57,9 @@ class MenuController extends Controller
             'header_line3',
         ]);
 
-        // Kas checkbox "tee nähtavaks" on märgitud?
         $isVisible = $request->boolean('is_visible');
         $data['is_visible'] = $isVisible;
 
-        // Kui uus menüü tehakse nähtavaks, lülitame kõik teised menüüd nähtavuse maha
         if ($isVisible) {
             Menu::where('is_visible', true)->update(['is_visible' => false]);
         }
@@ -76,7 +72,7 @@ class MenuController extends Controller
     }
 
     /**
-     * Kuva konkreetse menüü detailid (vajadusel).
+     * Kuva konkreetse menüü detailid.
      */
     public function show(Menu $menu)
     {
@@ -95,9 +91,17 @@ class MenuController extends Controller
 
     /**
      * Kuva menüü muutmise vorm.
+     *
+     * Muutmine on lubatud ainult tänase ja tuleviku kuupäevaga menüüdel.
      */
     public function edit(Menu $menu)
     {
+        if ($menu->date->lt(now()->startOfDay())) {
+            return redirect()
+                ->route('menus.index')
+                ->with('error', 'Eilse ja vanema kuupäevaga menüüd ei saa muuta.');
+        }
+
         $menuTypes = MenuType::all();
 
         return view('admin.menus.edit', compact('menu', 'menuTypes'));
@@ -106,11 +110,17 @@ class MenuController extends Controller
     /**
      * Uuenda olemasoleva menüü andmeid.
      *
-     * Märkus: kui see menüü märgitakse nähtavaks (is_visible = true),
-     * siis lülitame kõik teised menüüd nähtavuse maha.
+     * Muutmine on lubatud ainult tänase ja tuleviku kuupäevaga menüüdel.
+     * Kui menüü märgitakse nähtavaks, lülitatakse kõik teised menüüd välja.
      */
     public function update(Request $request, Menu $menu)
     {
+        if ($menu->date->lt(now()->startOfDay())) {
+            return redirect()
+                ->route('menus.index')
+                ->with('error', 'Eilse ja vanema kuupäevaga menüüd ei saa muuta.');
+        }
+
         $request->validate([
             'menu_type_id' => 'required|exists:menu_types,id',
             'date' => [
@@ -126,7 +136,6 @@ class MenuController extends Controller
             'is_visible'   => 'boolean',
         ]);
 
-        // Võtame ainult lubatud väljad
         $data = $request->only([
             'menu_type_id',
             'date',
@@ -135,11 +144,9 @@ class MenuController extends Controller
             'header_line3',
         ]);
 
-        // Kas checkbox "tee nähtavaks" on märgitud?
         $isVisible = $request->boolean('is_visible');
         $data['is_visible'] = $isVisible;
 
-        // Kui see menüü on märgitud nähtavaks, lülitame kõik teised menüüd välja
         if ($isVisible) {
             Menu::where('is_visible', true)
                 ->where('id', '!=', $menu->id)
@@ -154,7 +161,7 @@ class MenuController extends Controller
     }
 
     /**
-     * Kustuta menüü (soft delete, kui mudelis on SoftDeletes).
+     * Kustuta menüü.
      */
     public function destroy(Menu $menu)
     {
@@ -166,21 +173,20 @@ class MenuController extends Controller
     }
 
     /**
-     * Määra konkreetne menüü nähtavaks (aktiivseks) ühe nupuvajutusega.
+     * Määra konkreetne menüü aktiivseks.
      *
-     * Kasutus: "Määra aktiivseks" nupp menüüde nimekirjas.
-     * Loogika:
-     *  - kõik menüüd seatakse is_visible = false
-     *  - antud menüü seatakse is_visible = true
-     *
-     * Tulemuseks on, et korraga saab olla nähtav ainult üks menüü.
+     * Aktiivsust saab muuta ainult tänase kuupäevaga menüül.
      */
     public function setVisible(Menu $menu)
     {
-        // Lülita kõik menüüd nähtamatusse
+        if (!$menu->date->isToday()) {
+            return redirect()
+                ->route('menus.index')
+                ->with('error', 'Aktiivsust saab muuta ainult tänase kuupäevaga menüül.');
+        }
+
         Menu::where('is_visible', true)->update(['is_visible' => false]);
 
-        // Tee antud menüü nähtavaks
         $menu->update(['is_visible' => true]);
 
         return redirect()
@@ -189,13 +195,18 @@ class MenuController extends Controller
     }
 
     /**
-     * Muuda antud menüü mitteaktiivseks (is_visible = false).
+     * Muuda menüü mitteaktiivseks.
      *
-     * Märkus: sel juhul võib jäädagi 0 aktiivset menüüd,
-     * mis on täiesti lubatud.
+     * Aktiivsust saab muuta ainult tänase kuupäevaga menüül.
      */
     public function unsetVisible(Menu $menu)
     {
+        if (!$menu->date->isToday()) {
+            return redirect()
+                ->route('menus.index')
+                ->with('error', 'Aktiivsust saab muuta ainult tänase kuupäevaga menüül.');
+        }
+
         $menu->update(['is_visible' => false]);
 
         return redirect()

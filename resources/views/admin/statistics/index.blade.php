@@ -34,7 +34,7 @@
                         <div class="text-muted small mb-1">Erinevaid toite</div>
                         <div class="fs-4 fw-bold">{{ $summary['unique_foods_count'] }}</div>
                         <div class="small text-muted mt-2">
-                            Kõige populaarsem:
+                            Valitud filtris populaarseim:
                             <span class="fw-semibold text-dark">
                                 {{ $summary['most_popular_food'] ?? '-' }}
                             </span>
@@ -66,21 +66,11 @@
             </div>
 
             <div class="card-body">
-                <form method="GET" action="{{ route('statistics.index') }}" class="row g-2 mb-3">
+                <form method="GET" action="{{ route('statistics.index') }}" class="row g-2 mb-3" id="top-filter-form">
+                    {{-- Vasakul menüütüübid --}}
                     <div class="col-md-4">
-                        <select name="top_category" class="form-select" onchange="this.form.submit()">
-                            <option value="">Kõik kategooriad</option>
-                            @foreach ($topCategories as $category)
-                                <option value="{{ $category->id }}"
-                                    {{ (string) $topCategory === (string) $category->id ? 'selected' : '' }}>
-                                    {{ $category->name }}
-                                </option>
-                            @endforeach
-                        </select>
-                    </div>
-
-                    <div class="col-md-4">
-                        <select name="top_menu_type" class="form-select" onchange="this.form.submit()">
+                        <label for="top_menu_type" class="form-label small text-muted mb-1">Menüütüüp</label>
+                        <select name="top_menu_type" id="top_menu_type" class="form-select">
                             <option value="">Kõik menüütüübid</option>
                             @foreach ($topMenuTypes as $menuType)
                                 <option value="{{ $menuType->id }}"
@@ -89,6 +79,28 @@
                                 </option>
                             @endforeach
                         </select>
+                    </div>
+
+                    {{-- Paremal kategooriad --}}
+                    <div class="col-md-4">
+                        <label for="top_category" class="form-label small text-muted mb-1">Kategooria</label>
+                        <select name="top_category" id="top_category" class="form-select">
+                            <option value="">Kõik kategooriad</option>
+                            @foreach ($topCategories as $category)
+                                <option
+                                    value="{{ $category->id }}"
+                                    data-menu-type="{{ $category->menu_type_id }}"
+                                    {{ (string) $topCategory === (string) $category->id ? 'selected' : '' }}>
+                                    {{ $category->name }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div class="col-md-4 d-flex align-items-end">
+                        <button type="submit" class="btn btn-dark w-100">
+                            Rakenda filter
+                        </button>
                     </div>
 
                     @if ($search)
@@ -218,4 +230,46 @@
             </div>
         </div>
     </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const menuTypeSelect = document.getElementById('top_menu_type');
+            const categorySelect = document.getElementById('top_category');
+
+            function filterCategories() {
+                const selectedMenuType = menuTypeSelect.value;
+                const options = categorySelect.querySelectorAll('option');
+
+                options.forEach(option => {
+                    const optionMenuType = option.getAttribute('data-menu-type');
+
+                    // "Kõik kategooriad" jääb alati nähtavaks
+                    if (!optionMenuType) {
+                        option.hidden = false;
+                        return;
+                    }
+
+                    // Kui menüütüüpi pole valitud, näitame kõiki kategooriaid
+                    if (selectedMenuType === '') {
+                        option.hidden = false;
+                        return;
+                    }
+
+                    // Kuvame ainult selle menüütüübi kategooriad
+                    option.hidden = optionMenuType !== selectedMenuType;
+                });
+
+                // Kui valitud kategooria ei kuulu enam valitud menüütüübi alla, nullime valiku
+                const selectedOption = categorySelect.options[categorySelect.selectedIndex];
+                if (selectedOption && selectedOption.hidden) {
+                    categorySelect.value = '';
+                }
+            }
+
+            menuTypeSelect.addEventListener('change', filterCategories);
+
+            // Rakendame filtreerimise kohe lehe laadimisel
+            filterCategories();
+        });
+    </script>
 @endsection

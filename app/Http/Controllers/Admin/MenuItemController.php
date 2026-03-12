@@ -13,15 +13,35 @@ use Illuminate\Support\Facades\Validator;
 
 class MenuItemController extends Controller
 {
+    /**
+     * Kontrollib, kas menüü on eilse või vanema kuupäevaga.
+     * Sellisel juhul ei tohi selle menüü toite enam muuta.
+     */
+    private function ensureMenuIsEditable(Menu $menu)
+    {
+        if ($menu->date->lt(now()->startOfDay())) {
+            return redirect()
+                ->route('menus.index')
+                ->with('error', 'Eilse ja vanema kuupäevaga menüü toite ei saa muuta.');
+        }
+
+        return null;
+    }
+
     /*
      * Näita toidu lisamise vormi
      */
     public function create(Menu $menu)
     {
+        if ($response = $this->ensureMenuIsEditable($menu)) {
+            return $response;
+        }
+
         $categories = Category::where('menu_type_id', $menu->menu_type_id)
             ->orderBy('order_index')
             ->get();
-        $allergens  = Allergen::orderBy('order_index')->get();
+
+        $allergens = Allergen::orderBy('order_index')->get();
 
         return view('admin.menu_items.create', compact('menu', 'categories', 'allergens'));
     }
@@ -31,14 +51,18 @@ class MenuItemController extends Controller
      */
     public function store(Request $request, Menu $menu)
     {
+        if ($response = $this->ensureMenuIsEditable($menu)) {
+            return $response;
+        }
+
         $request->validate([
             'category_id' => 'required|exists:categories,id',
-            'name'        => 'required|string|max:255',
-            'full_price'  => 'nullable|numeric|max:999999.99',
-            'half_price'  => 'nullable|numeric|max:999999.99',
+            'name' => 'required|string|max:255',
+            'full_price' => 'nullable|numeric|max:999999.99',
+            'half_price' => 'nullable|numeric|max:999999.99',
             'is_available' => 'boolean',
             'order_index' => 'nullable|integer',
-            'allergens'   => 'array',
+            'allergens' => 'array',
             'allergens.*' => 'exists:allergens,id',
         ], [
             'full_price.max' => 'Täishind ei tohi olla suurem kui 999999.99.',
@@ -46,12 +70,12 @@ class MenuItemController extends Controller
         ]);
 
         $item = $menu->items()->create([
-            'category_id'  => $request->category_id,
-            'name'         => $request->name,
-            'full_price'   => $request->full_price,
-            'half_price'   => $request->half_price,
+            'category_id' => $request->category_id,
+            'name' => $request->name,
+            'full_price' => $request->full_price,
+            'half_price' => $request->half_price,
             'is_available' => $request->boolean('is_available'),
-            'order_index'  => $request->order_index ?? 0,
+            'order_index' => $request->order_index ?? 0,
         ]);
 
         $item->allergens()->sync($request->allergens ?? []);
@@ -66,8 +90,11 @@ class MenuItemController extends Controller
      */
     public function edit(Menu $menu, MenuItem $item)
     {
-        // Kontroll, et item kuulub sellele menüüle
         abort_unless($item->menu_id === $menu->id, 404);
+
+        if ($response = $this->ensureMenuIsEditable($menu)) {
+            return $response;
+        }
 
         $categories = Category::where('menu_type_id', $menu->menu_type_id)
             ->orderBy('order_index')
@@ -90,26 +117,30 @@ class MenuItemController extends Controller
     {
         abort_unless($item->menu_id === $menu->id, 404);
 
+        if ($response = $this->ensureMenuIsEditable($menu)) {
+            return $response;
+        }
+
         $request->validate([
             'category_id' => 'required|exists:categories,id',
-            'name'        => 'required|string|max:255',
-            'full_price'  => 'nullable|numeric|max:999999.99',
-            'half_price'  => 'nullable|numeric|max:999999.99',
+            'name' => 'required|string|max:255',
+            'full_price' => 'nullable|numeric|max:999999.99',
+            'half_price' => 'nullable|numeric|max:999999.99',
             'is_available' => 'boolean',
             'order_index' => 'nullable|integer',
-            'allergens'   => 'array',
+            'allergens' => 'array',
         ], [
             'full_price.max' => 'Täishind ei tohi olla suurem kui 999999.99.',
             'half_price.max' => 'Poolhind ei tohi olla suurem kui 999999.99.',
         ]);
 
         $item->update([
-            'category_id'  => $request->category_id,
-            'name'         => $request->name,
-            'full_price'   => $request->full_price,
-            'half_price'   => $request->half_price,
+            'category_id' => $request->category_id,
+            'name' => $request->name,
+            'full_price' => $request->full_price,
+            'half_price' => $request->half_price,
             'is_available' => $request->boolean('is_available'),
-            'order_index'  => $request->order_index ?? 0,
+            'order_index' => $request->order_index ?? 0,
         ]);
 
         $item->allergens()->sync($request->allergens ?? []);
@@ -124,6 +155,12 @@ class MenuItemController extends Controller
      */
     public function destroy(Menu $menu, MenuItem $item)
     {
+        abort_unless($item->menu_id === $menu->id, 404);
+
+        if ($response = $this->ensureMenuIsEditable($menu)) {
+            return $response;
+        }
+
         $item->allergens()->detach();
         $item->delete();
 
@@ -151,6 +188,10 @@ class MenuItemController extends Controller
 
     public function bulkCreate(Menu $menu)
     {
+        if ($response = $this->ensureMenuIsEditable($menu)) {
+            return $response;
+        }
+
         $categories = Category::where('menu_type_id', $menu->menu_type_id)
             ->orderBy('order_index')
             ->get();
@@ -173,6 +214,10 @@ class MenuItemController extends Controller
 
     public function bulkSave(Request $request, Menu $menu)
     {
+        if ($response = $this->ensureMenuIsEditable($menu)) {
+            return $response;
+        }
+
         if (!$request->has('items')) {
             return back()->with('error', 'Toite ei leitud.');
         }
@@ -195,19 +240,15 @@ class MenuItemController extends Controller
         }
 
         DB::transaction(function () use ($request, $menu) {
-
             foreach ($request->items as $categoryId => $rows) {
-
                 foreach ($rows as $row) {
-
                     $itemId = $row['id'] ?? null;
-                    $name   = trim($row['name'] ?? '');
+                    $name = trim($row['name'] ?? '');
 
                     /*
-                 * DELETE
-                 */
+                     * DELETE
+                     */
                     if (!empty($row['delete']) && $itemId) {
-
                         MenuItem::where('menu_id', $menu->id)
                             ->find($itemId)
                             ?->delete();
@@ -216,8 +257,8 @@ class MenuItemController extends Controller
                     }
 
                     /*
-                 * Kui nimi tühi → ignoreeri rida
-                 */
+                     * Kui nimi tühi → ignoreeri rida
+                     */
                     if ($name === '') {
                         continue;
                     }
@@ -225,43 +266,40 @@ class MenuItemController extends Controller
                     $item = null;
 
                     /*
-                 * UPDATE olemasolev kirje
-                 */
+                     * UPDATE olemasolev kirje
+                     */
                     if ($itemId) {
-
                         $item = MenuItem::where('menu_id', $menu->id)
                             ->find($itemId);
 
                         if ($item) {
-
                             $item->update([
-                                'category_id'  => $categoryId,
-                                'name'         => $name,
-                                'full_price'   => $row['full_price'] ?? null,
-                                'half_price'   => $row['half_price'] ?? null,
+                                'category_id' => $categoryId,
+                                'name' => $name,
+                                'full_price' => $row['full_price'] ?? null,
+                                'half_price' => $row['half_price'] ?? null,
                                 'is_available' => isset($row['is_available']),
                             ]);
                         }
                     }
 
                     /*
-                 * CREATE uus kirje
-                 */
+                     * CREATE uus kirje
+                     */
                     if (!$item) {
-
                         $item = $menu->items()->create([
-                            'category_id'  => $categoryId,
-                            'name'         => $name,
-                            'full_price'   => $row['full_price'] ?? null,
-                            'half_price'   => $row['half_price'] ?? null,
+                            'category_id' => $categoryId,
+                            'name' => $name,
+                            'full_price' => $row['full_price'] ?? null,
+                            'half_price' => $row['half_price'] ?? null,
                             'is_available' => isset($row['is_available']),
-                            'order_index'  => 0
+                            'order_index' => 0,
                         ]);
                     }
 
                     /*
-                 * ALLERGENID
-                 */
+                     * ALLERGENID
+                     */
                     $item->allergens()->sync($row['allergens'] ?? []);
                 }
             }
@@ -276,6 +314,10 @@ class MenuItemController extends Controller
     {
         abort_unless($item->menu_id === $menu->id, 404);
 
+        if ($response = $this->ensureMenuIsEditable($menu)) {
+            return $response;
+        }
+
         $item->update(['is_available' => true]);
 
         return redirect()
@@ -286,6 +328,10 @@ class MenuItemController extends Controller
     public function unsetAvailable(Menu $menu, MenuItem $item)
     {
         abort_unless($item->menu_id === $menu->id, 404);
+
+        if ($response = $this->ensureMenuIsEditable($menu)) {
+            return $response;
+        }
 
         $item->update(['is_available' => false]);
 

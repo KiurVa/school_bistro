@@ -4,6 +4,9 @@
 
 @section('content')
     <div class="container mt-4">
+        @php
+            $isPastMenu = $menu->date->lt(now()->startOfDay());
+        @endphp
 
         <h1> {{ $menu->type->display_name ?? '-' }}: {{ $menu->date->format('d.m.Y') }}</h1>
 
@@ -66,7 +69,15 @@
                     <tr class="d-flex  ">
 
                         <td class="col-8 py-2 ps-2 {{ $item->is_available ? '' : 'blur-item' }}">
-                            <a href="{{ route('items.edit', [$menu, $item]) }}" class="text-decoration-none fw-bold">
+                            @if ($isPastMenu)
+                                <span class="fw-bold">
+                                    {{ Str::upper($item->name) }}
+                                </span>
+                            @else
+                                <a href="{{ route('items.edit', [$menu, $item]) }}" class="text-decoration-none fw-bold">
+                                    {{ Str::upper($item->name) }}
+                                </a>
+                            @endif
                                 {{ Str::upper($item->name) }}
                             </a>
 
@@ -99,24 +110,37 @@
                         </td>
                         <td class="col-1 text-end pe-2">
 
-                            @if ($item->is_available)
-                                <form action="{{ route('items.unsetAvailable', [$menu, $item]) }}" method="POST"
-                                    class="d-inline">
-                                    @csrf
-                                    <button class="btn btn-sm btn-success">
+                            @if ($isPastMenu)
+
+                                @if ($item->is_available)
+                                    <button class="btn btn-sm btn-secondary" disabled>
                                         Saadaval
                                     </button>
-                                </form>
-                            @else
-                                <form action="{{ route('items.setAvailable', [$menu, $item]) }}" method="POST"
-                                    class="d-inline">
-                                    @csrf
-                                    <button class="btn btn-sm btn-outline-secondary">
+                                @else
+                                    <button class="btn btn-sm btn-secondary" disabled>
                                         Otsas
                                     </button>
-                                </form>
-                            @endif
+                                @endif
 
+                            @else
+
+                                @if ($item->is_available)
+                                    <form action="{{ route('items.unsetAvailable', [$menu, $item]) }}" method="POST" class="d-inline">
+                                        @csrf
+                                        <button class="btn btn-sm btn-success">
+                                            Saadaval
+                                        </button>
+                                    </form>
+                                @else
+                                    <form action="{{ route('items.setAvailable', [$menu, $item]) }}" method="POST" class="d-inline">
+                                        @csrf
+                                        <button class="btn btn-sm btn-outline-secondary">
+                                            Otsas
+                                        </button>
+                                    </form>
+                                @endif
+
+                            @endif
                         </td>
 
                     </tr>
@@ -132,9 +156,16 @@
 
         @endforelse
 
-        <a href="{{ route('items.create', $menu) }}" class="btn btn-primary">Lisa toit</a>
-        <a href="{{ route('menus.items.bulk', $menu) }}" class="btn btn-primary">Lisa/Muuda kõiki toite</a>
-        <a href="{{ route('menus.edit', $menu) }}" class="btn btn-warning">Muuda</a>
+        @if ($isPastMenu)
+            <button class="btn btn-secondary" disabled>Lisa toit</button>
+            <button class="btn btn-secondary" disabled>Lisa/Muuda kõiki toite</button>
+            <button class="btn btn-secondary" disabled>Muuda</button>
+        @else
+            <a href="{{ route('items.create', $menu) }}" class="btn btn-primary">Lisa toit</a>
+            <a href="{{ route('menus.items.bulk', $menu) }}" class="btn btn-primary">Lisa/Muuda kõiki toite</a>
+            <a href="{{ route('menus.edit', $menu) }}" class="btn btn-warning">Muuda</a>
+        @endif
+
         <a href="{{ route('menus.index') }}" class="btn btn-secondary">Tagasi</a>
 
     </div>
