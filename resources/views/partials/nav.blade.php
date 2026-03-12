@@ -64,6 +64,8 @@
                                     </a>
                                 </li>
                             @endif
+                            <li><a class="dropdown-item {{ request()->routeIs('manual') ? 'active' : '' }}"
+                                    href="{{ route('manual') }}">Kasutusjuhend</a></li>
                             <hr class="dropdown-divider">
                             <li>
                                 <form method="POST" action="{{ route('logout') }}">
