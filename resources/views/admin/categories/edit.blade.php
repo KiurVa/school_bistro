@@ -46,7 +46,7 @@
             <label class="form-check-label" for="is_visible">Nähtav</label>
         </div>
 
-        <button class="btn btn-success">Uuenda</button>
+        <button class="btn btn-primary">Salvesta</button>
         <a href="{{ route('categories.index') }}" class="btn btn-secondary">Tagasi</a>
     </form>
 

@@ -31,11 +31,6 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 // ------------------------------
 Route::middleware('auth')->group(function () {
 
-    // Dashboard
-    Route::get('/dashboard', function () {
-        return view('admin.dashboard');
-    })->name('dashboard');
-
     // --------------------------
     // Menüü haldus (admin)
     // --------------------------

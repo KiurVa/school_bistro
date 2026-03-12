@@ -4,9 +4,10 @@
 
 @section('content')
 
-    <div class="container">
+    <div class="container mt-4">
 
-        <h3>Muuda toitu: <strong>{{ $item->name }}</strong></h3>
+        <h1 class="mb-1">Muuda toitu</h1>
+        <h5><strong>{{ $item->name }}</strong></h5>
 
         <form id="updateForm" action="{{ route('items.update', [$menu, $item]) }}" method="POST">
             @csrf

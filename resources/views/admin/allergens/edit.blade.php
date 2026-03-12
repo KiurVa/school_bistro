@@ -3,19 +3,9 @@
 @section('content')
     <div class="container mt-4">
 
-        <h1 class="mb-4">Muuda allergeeni</h1>
+        <h1 class="mb-3">Muuda allergeeni</h1>
 
-        @if ($errors->any())
-            <div class="alert alert-danger">
-                <ul class="mb-0">
-                    @foreach ($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-            </div>
-        @endif
-
-        <form action="{{ route('allergens.update', $allergen) }}" method="POST" class="card p-4">
+        <form action="{{ route('allergens.update', $allergen) }}" method="POST">
             @csrf
             @method('PUT')
 
@@ -34,17 +24,8 @@
                 <input type="number" name="order_index" class="form-control"
                     value="{{ old('order_index', $allergen->order_index) }}">
             </div>
-
-            <div class="d-flex justify-content-between">
-                <a href="{{ route('allergens.index') }}" class="btn btn-secondary">
-                    Tagasi
-                </a>
-
-                <button type="submit" class="btn btn-primary">
-                    Salvesta muudatused
-                </button>
-            </div>
-
+            <button class="btn btn-primary">Salvesta</button>
+            <a href="{{ route('allergens.index') }}" class="btn btn-secondary">Tagasi</a>
         </form>
     </div>
 @endsection

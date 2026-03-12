@@ -51,7 +51,7 @@ class AuthController extends Controller
         // turvalisuse mõttes regenereerime sessiooni
         $request->session()->regenerate();
 
-        // suuname dashboardile (või intended lehele)
+        // suuname menus.index lehel
         return redirect()->intended(route('menus.index'));
     }
 

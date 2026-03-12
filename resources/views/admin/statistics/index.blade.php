@@ -3,7 +3,7 @@
 @section('title', 'Statistika')
 
 @section('content')
-    <div class="container py-4">
+    <div class="container mt-4">
         <div class="d-flex justify-content-between align-items-center mb-4">
             <div>
                 <h1 class="mb-3">Statistika</h1>

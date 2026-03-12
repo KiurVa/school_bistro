@@ -16,14 +16,6 @@
         <div class="collapse navbar-collapse" id="mainNavbar">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
 
-                {{-- Lisa menüü --}}
-                <li class="nav-item">
-                    <a class="nav-link {{ request()->routeIs('menus.create') ? 'active' : '' }}"
-                        href="{{ route('menus.create') }}">
-                        Lisa menüü
-                    </a>
-                </li>
-
                 {{-- Menüü haldus --}}
                 <a class="nav-link {{ request()->routeIs('menus.*') ? 'active' : '' }}"
                     href="{{ route('menus.index') }}">
@@ -46,56 +38,44 @@
                     </a>
                 </li>
                 {{-- Taustapiltide haldus – kõigile sisse loginud kasutajatele --}}
-                @auth
-                    <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('backgrounds.*') ? 'active' : '' }}"
-                            href="{{ route('backgrounds.index') }}">
-                            Taustapiltide haldus
-                        </a>
-                    </li>
-                @endauth
-                {{-- Statistika --}}
-                <li class="nav-item">
-                    <a class="nav-link {{ request()->routeIs('statistics*') ? 'active' : '' }}"
-                        href="{{ route('statistics.index') }}">
-                        Statistika
-                    </a>
-                </li>
-
-                {{-- Kasutajate haldus – ainult adminile --}}
-                @auth
-                    @if (auth()->user()->is_admin)
-                        <li class="nav-item">
-                            <a class="nav-link {{ request()->routeIs('admin.users.*') ? 'active' : '' }}"
-                                href="{{ route('admin.users.index') }}">
-                                Kasutajate haldus
-                            </a>
-                        </li>
-                    @endif
-                @endauth
-
-                {{-- Menüü tüübid (disabled / tulevik) --}}
-                {{-- <li class="nav-item">
-                    <a class="nav-link {{ request()->is('admin/menu-types*') ? 'active' : '' }}"
-                       href="{{ route('menu-types.index') ?? '#' }}">
-                        Menüü tüübid
-                    </a>
-                </li> --}}
-
-                {{-- Siia saab hiljem lisada nt: Tänane menüü, Seaded jne --}}
             </ul>
-
-            {{-- Parempoolne osa: kasutaja / login --}}
+            {{-- Parempoolne osa: dropdown menu ja logi välja --}}
             <ul class="navbar-nav mb-2 mb-lg-0">
-
                 @auth
-                    <li class="nav-item">
-                        <span class="navbar-text me-3">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
+                            aria-expanded="false">
                             {{ Auth::user()->name }}
-                        </span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li>
+                                <a class="dropdown-item {{ request()->routeIs('statistics*') ? 'active' : '' }}"
+                                    href="{{ route('statistics.index') }}">
+                                    Statistika
+                                </a>
+                            </li>
+                            <li><a class="dropdown-item {{ request()->routeIs('backgrounds.*') ? 'active' : '' }}"
+                                    href="{{ route('backgrounds.index') }}">Taustapiltide haldus</a></li>
+                            @if (auth()->user()->is_admin)
+                                <li>
+                                    <a class="dropdown-item {{ request()->routeIs('admin.users.*') ? 'active' : '' }}"
+                                        href="{{ route('admin.users.index') }}">
+                                        Kasutajate haldus
+                                    </a>
+                                </li>
+                            @endif
+                            <hr class="dropdown-divider">
+                            <li>
+                                <form method="POST" action="{{ route('logout') }}">
+                                    @csrf
+                                    <button class="dropdown-item">
+                                        Logi välja
+                                    </button>
+                                </form>
+                            </li>
+                        </ul>
                     </li>
-
-                    <li class="nav-item">
+                    <li class="nav-item d-flex align-items-center">
                         <form method="POST" action="{{ route('logout') }}">
                             @csrf
                             <button class="btn btn-outline-light btn-sm" type="submit">
@@ -110,9 +90,7 @@
                         <a class="nav-link" href="{{ route('login') }}">Logi sisse</a>
                     </li>
                 @endguest
-
             </ul>
-
         </div>
     </div>
 </nav>

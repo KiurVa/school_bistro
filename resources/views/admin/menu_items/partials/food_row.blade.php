@@ -8,21 +8,21 @@
     @if ($item)
         <input type="hidden" name="items[{{ $category_id }}][{{ $index }}][id]" value="{{ $item->id }}">
     @endif
-    <div class="position-relative mb-2">
+    <div class="position-relative mb-1">
         <input type="text" name="items[{{ $category_id }}][{{ $index }}][name]" class="food-name-input"
             placeholder="Toidu nimi..." autocomplete="off"
             value="{{ old("items.$category_id.$index.name", $item->name ?? '') }}">
     </div>
 
     <div class="row">
-        <div class="col-md-4">
+        <div class="col-md-2">
             <label>Täishind</label>
             <input type="number" step="0.1" class="form-control"
                 name="items[{{ $category_id }}][{{ $index }}][full_price]"
                 value="{{ old("items.$category_id.$index.full_price", $item->full_price ?? '') }}">
         </div>
 
-        <div class="col-md-4">
+        <div class="col-md-2">
             <label>Poolhind</label>
             <input type="number" step="0.1" class="form-control"
                 name="items[{{ $category_id }}][{{ $index }}][half_price]"

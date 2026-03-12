@@ -59,7 +59,7 @@
                 <label for="is_visible" class="form-check-label">Tee kohe nähtavaks</label>
             </div>
 
-            <button class="btn btn-success">Salvesta</button>
+            <button class="btn btn-primary">Salvesta</button>
             <a href="{{ route('menus.index') }}" class="btn btn-secondary">Katkesta</a>
         </form>
 

@@ -2,32 +2,7 @@
 
 @section('content')
 <div class="container mt-4">
-    <h1 class="mb-4">Kasutajate haldus</h1>
-
-    {{-- Teated --}}
-    @if (session('success'))
-        <div class="alert alert-success">
-            {{ session('success') }}
-        </div>
-    @endif
-
-    @if ($errors->has('general'))
-        <div class="alert alert-danger">
-            {{ $errors->first('general') }}
-        </div>
-    @endif
-
-    @if ($errors->any() && !$errors->has('general'))
-        <div class="alert alert-danger">
-            <ul class="mb-0">
-                @foreach ($errors->all() as $error)
-                    @if ($error !== $errors->first('general'))
-                        <li>{{ $error }}</li>
-                    @endif
-                @endforeach
-            </ul>
-        </div>
-    @endif
+    <h1 class="mb-3">Kasutajate haldus</h1>
 
     {{-- Uue kasutaja lisamine --}}
     <div class="card mb-4">
