@@ -44,24 +44,18 @@
             <strong>{{ $menu->display_name }}</strong>
             ({{ $menu->date->format('d.m.Y') }})
         </h2>
+        {{-- Nupud --}}
+        <div class="d-flex gap-2">
+            <button type="submit" form="bulkForm" class="btn btn-primary">
+                Salvesta
+            </button>
 
-        @if (session('error'))
-            <div class="alert alert-danger">
-                {{ session('error') }}
-            </div>
-        @endif
+            <a href="{{ route('menus.show', $menu) }}" class="btn btn-secondary">
+                Katkesta
+            </a>
+        </div>
 
-        @if ($errors->any())
-            <div class="alert alert-danger">
-                <ul class="mb-0">
-                    @foreach ($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-            </div>
-        @endif
-
-        <form action="{{ route('menus.items.bulkSave', $menu) }}" method="POST">
+        <form id="bulkForm" action="{{ route('menus.items.bulkSave', $menu) }}" method="POST">
             @csrf
 
             @foreach ($categories as $category)
@@ -98,13 +92,17 @@
                 </div>
 
                 {{-- Lisa rida nupp --}}
-                    <button type="button" class="btn btn-sm btn-secondary mt-2" onclick="addRow({{ $category->id }})">
-                        + Lisa rida
-                    </button>
+                <button type="button" class="btn btn-sm btn-secondary mt-2 mb-2" onclick="addRow({{ $category->id }})">
+                    + Lisa rida
+                </button>
             @endforeach
 
-            <button class="btn btn-primary mt-2">Salvesta</button>
-    </form>
+            <div class="d-flex justify-content-end gap-2 mt-2 mb-2">
+                <button class="btn btn-primary">Salvesta</button>
+                <a href="{{ route('menus.index') }}" class="btn btn-secondary">Katkesta</a>
+            </div>
+
+        </form>
 
     </div>
 
