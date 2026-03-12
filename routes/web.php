@@ -134,4 +134,7 @@ Route::middleware('auth')->group(function () {
 
     //Statistika
     Route::get('/statistics', [StatisticsController::class, 'index'])->name('statistics.index');
+
+    //Kasutusjuhend
+    Route::view('/manual', 'admin.user_manual.index')->name('manual');
 });
