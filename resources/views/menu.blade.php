@@ -126,12 +126,11 @@
 
                                         {{-- Kui poolhind puudub → kuva ainult täishind --}}
                                     @elseif (is_null($item->half_price))
-                                        {{ number_format($item->full_price, 2) }} €
+                                        {{ number_format($item->full_price, 2) }}
 
                                         {{-- Kui mõlemad hinnad olemas → kuva full / half --}}
                                     @else
-                                        {{ number_format($item->full_price, 2) }} € /
-                                        {{ number_format($item->half_price, 2) }} €
+                                        {{ number_format($item->full_price, 2) }}/{{ number_format($item->half_price, 2) }}
                                     @endif
 
                                 </td>
