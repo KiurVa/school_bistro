@@ -17,14 +17,14 @@
     <div class="row">
         <div class="col-md-2">
             <label>Täishind</label>
-            <input type="number" step="0.1" class="form-control"
+            <input type="text" inputmode="decimal" step="0.01" class="form-control"
                 name="items[{{ $category_id }}][{{ $index }}][full_price]"
                 value="{{ old("items.$category_id.$index.full_price", $item->full_price ?? '') }}">
         </div>
 
         <div class="col-md-2">
             <label>Poolhind</label>
-            <input type="number" step="0.1" class="form-control"
+            <input type="text" inputmode="decimal" step="0.01" class="form-control"
                 name="items[{{ $category_id }}][{{ $index }}][half_price]"
                 value="{{ old("items.$category_id.$index.half_price", $item->half_price ?? '') }}">
         </div>

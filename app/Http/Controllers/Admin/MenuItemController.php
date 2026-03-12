@@ -55,6 +55,19 @@ class MenuItemController extends Controller
             return $response;
         }
 
+        $full = $request->full_price !== null
+            ? str_replace(',', '.', $request->full_price)
+            : null;
+
+        $half = $request->half_price !== null
+            ? str_replace(',', '.', $request->half_price)
+            : null;
+
+        $request->merge([
+            'full_price' => $full === '' ? null : $full,
+            'half_price' => $half === '' ? null : $half,
+        ]);
+
         $request->validate([
             'category_id' => 'required|exists:categories,id',
             'name' => 'required|string|max:255',
@@ -120,6 +133,19 @@ class MenuItemController extends Controller
         if ($response = $this->ensureMenuIsEditable($menu)) {
             return $response;
         }
+
+        $full = $request->full_price !== null
+            ? str_replace(',', '.', $request->full_price)
+            : null;
+
+        $half = $request->half_price !== null
+            ? str_replace(',', '.', $request->half_price)
+            : null;
+
+        $request->merge([
+            'full_price' => $full === '' ? null : $full,
+            'half_price' => $half === '' ? null : $half,
+        ]);
 
         $request->validate([
             'category_id' => 'required|exists:categories,id',
@@ -221,6 +247,21 @@ class MenuItemController extends Controller
         if (!$request->has('items')) {
             return back()->with('error', 'Toite ei leitud.');
         }
+
+        $items = $request->input('items', []);
+
+        foreach ($items as $categoryId => $rows) {
+            foreach ($rows as $index => $row) {
+                foreach (['full_price', 'half_price'] as $field) {
+                    if (isset($row[$field])) {
+                        $value = str_replace(',', '.', $row[$field]);
+                        $items[$categoryId][$index][$field] = $value === '' ? null : $value;
+                    }
+                }
+            }
+        }
+
+        $request->merge(['items' => $items]);
 
         $validator = Validator::make($request->all(), [
             'items' => 'array',

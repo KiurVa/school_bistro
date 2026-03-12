@@ -89,7 +89,7 @@
         {{-- BUTTONS --}}
         <div class="d-flex gap-2 mt-3">
             <button type="submit" form="updateForm" class="btn btn-primary">
-                Uuenda
+                Salvesta
             </button>
 
             <button type="submit" form="deleteForm" class="btn btn-danger">
