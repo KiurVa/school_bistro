@@ -28,11 +28,12 @@ class MenuController extends Controller
      * Kuva vorm uue menüü loomiseks.
      */
     public function create()
-    {
-        $menuTypes = MenuType::all();
+{
+    $menuTypes = MenuType::all();
+    $menu = new Menu();
 
-        return view('admin.menus.create', compact('menuTypes'));
-    }
+    return view('admin.menus.create', compact('menuTypes', 'menu'));
+}
 
     /**
      * Salvesta uus menüü andmebaasi.
@@ -76,7 +77,24 @@ class MenuController extends Controller
             Menu::where('is_visible', true)->update(['is_visible' => false]);
         }
 
-        Menu::create($data);
+        $newMenu = Menu::create($data);
+
+        if ($request->duplicate_from) {
+
+            $sourceMenu = Menu::with('items.allergens')
+                ->find($request->duplicate_from);
+
+            foreach ($sourceMenu->items as $item) {
+
+                $newItem = $item->replicate();
+                $newItem->menu_id = $newMenu->id;
+                $newItem->save();
+
+                $newItem->allergens()->sync(
+                    $item->allergens->pluck('id')
+                );
+            }
+        }
 
         return redirect()
             ->route('menus.index')
@@ -237,38 +255,17 @@ class MenuController extends Controller
      */
     public function duplicate(Menu $menu)
     {
-        $today = now()->toDateString();
+        $menu->load('items.allergens');
 
-        $exists = Menu::where('menu_type_id', $menu->menu_type_id)
-            ->whereDate('date', $today)
-            ->exists();
+        $menuTypes = MenuType::all();
 
-        if ($exists) {
-            return redirect()->route('menus.index')
-                ->with('error', 'Selle menüü tüübiga menüü on tänaseks juba olemas.');
-        }
+        $menuCopy = $menu->replicate();
+        $menuCopy->date = now()->addDay();
 
-        DB::transaction(function () use ($menu) {
-
-            $menu->load('items.allergens');
-
-            $newMenu = $menu->replicate();
-            $newMenu->date = now()->toDateString();
-            $newMenu->save();
-
-            foreach ($menu->items as $item) {
-
-                $newItem = $item->replicate();
-                $newItem->menu_id = $newMenu->id;
-                $newItem->save();
-
-                $newItem->allergens()->sync(
-                    $item->allergens->pluck('id')
-                );
-            }
-        });
-
-        return redirect()->route('menus.index')
-            ->with('success', 'Menüü kopeeritud');
+        return view('admin.menus.create', [
+            'menu' => $menuCopy,
+            'menuTypes' => $menuTypes,
+            'duplicate_from' => $menu->id,
+        ]);
     }
 }

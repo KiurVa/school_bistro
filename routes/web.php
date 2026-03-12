@@ -43,44 +43,48 @@ Route::middleware('auth')->group(function () {
     // Nähtavaks (aktiivseks) määramine
     Route::post('/menus/{menu}/set-visible', [AdminMenu::class, 'setVisible'])->name('menus.setVisible');
     Route::post('/menus/{menu}/unset-visible', [AdminMenu::class, 'unsetVisible'])->name('menus.unsetVisible');
-    Route::post('/menus/{menu}/duplicate', [AdminMenu::class, 'duplicate'])->name('menus.duplicate');
+    Route::get('/menus/{menu}/duplicate', [AdminMenu::class, 'duplicate'])->name('menus.duplicate');
 
 
     //Menüü toitude haldus
 
     Route::scopeBindings()->prefix('menus/{menu}')->group(function () {
 
-    // Partial (Lisa rida bulk editorisse)
-    Route::get('items/row-template', function (\Illuminate\Http\Request $request) {
-        return view('admin.menu_items.partials.food_row', [
-            'category_id' => $request->category_id,
-            'index' => $request->index,
-            'allergens' => \App\Models\Allergen::orderBy('order_index')->get(),
-        ]);
-    })->name('menus.items.rowTemplate');
+        // Partial (Lisa rida bulk editorisse)
+        Route::get('items/row-template', function (\Illuminate\Http\Request $request) {
+            return view('admin.menu_items.partials.food_row', [
+                'category_id' => $request->category_id,
+                'index' => $request->index,
+                'allergens' => \App\Models\Allergen::orderBy('order_index')->get(),
+            ]);
+        })->name('menus.items.rowTemplate');
 
 
-    // BULK editor
-    Route::get('items/bulk', [MenuItemController::class, 'bulkCreate'])
-        ->name('menus.items.bulk');
+        // BULK editor
+        Route::get('items/bulk', [MenuItemController::class, 'bulkCreate'])
+            ->name('menus.items.bulk');
 
-    Route::post('items/bulk-save', [MenuItemController::class, 'bulkSave'])
-        ->name('menus.items.bulkSave');
+        Route::post('items/bulk-save', [MenuItemController::class, 'bulkSave'])
+            ->name('menus.items.bulkSave');
 
 
-    // Üksiku toidu CRUD
-    Route::resource('items', MenuItemController::class)
-        ->only(['create', 'store', 'edit', 'update','destroy']);
+        // Üksiku toidu CRUD
+        Route::resource('items', MenuItemController::class)
+            ->only(['create', 'store', 'edit', 'update', 'destroy']);
 
-    // TOIDU SAADAVUSE TOGGLE
-    Route::post('items/{item}/set-available',
-        [MenuItemController::class, 'setAvailable'])
-        ->name('items.setAvailable');
+        // TOIDU SAADAVUSE TOGGLE
+        Route::post(
+            'items/{item}/set-available',
+            [MenuItemController::class, 'setAvailable']
+        )
+            ->name('items.setAvailable');
 
-    Route::post('items/{item}/unset-available',
-        [MenuItemController::class, 'unsetAvailable'])
-        ->name('items.unsetAvailable');
-});
+        Route::post(
+            'items/{item}/unset-available',
+            [MenuItemController::class, 'unsetAvailable']
+        )
+            ->name('items.unsetAvailable');
+    });
     // Otsing
     Route::get('/menu-item-search', [MenuItemController::class, 'search'])
         ->name('menuItem.search');

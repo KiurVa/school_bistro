@@ -96,11 +96,9 @@
                                 @method('DELETE')
                                 <button class="btn btn-sm btn-danger">Kustuta</button>
                             </form>
-                            <form action="{{ route('menus.duplicate', $menu) }}" method="POST" style="display:inline;">
-                                @csrf
-                                <button type="submit" class="btn btn-sm btn-outline-secondary">
-                                    Kopeeri
-                                </button>
+                            <a href="{{ route('menus.duplicate', $menu) }}" class="btn btn-sm btn-outline-secondary">
+                                Kopeeri
+                            </a>
                             </form>
                         </td>
                     </tr>

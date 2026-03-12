@@ -9,6 +9,9 @@
         <!-- Vorm menüü loomiseks -->
         <form action="{{ route('menus.store') }}" method="POST" enctype="multipart/form-data">
             @csrf
+            @if (isset($duplicate_from))
+                <input type="hidden" name="duplicate_from" value="{{ $duplicate_from }}">
+            @endif
 
             <!-- Menüü tüüp -->
             <div class="mb-3">
@@ -16,7 +19,7 @@
                 <select name="menu_type_id" id="menu_type_id" class="form-select">
                     @foreach ($menuTypes as $type)
                         <option value="{{ $type->id }}"
-                            {{ old('menu_type_id') == $type->id ? 'selected' : ($type->name == 'Lõunasöök' ? 'selected' : '') }}>
+                            {{ old('menu_type_id', $menu->menu_type_id) == $type->id ? 'selected' : '' }}>
                             {{ $type->display_name }}
                         </option>
                     @endforeach
@@ -27,26 +30,26 @@
             <div class="mb-3">
                 <label for="date" class="form-label">Kuupäev</label>
                 <input type="date" name="date" id="date" class="form-control"
-                    value="{{ old('date', date('Y-m-d')) }}">
+                    value="{{ old('date', optional($menu->date)->format('Y-m-d') ?? now()->format('Y-m-d')) }}">
             </div>
 
             <!-- Päiseridad -->
             <div class="mb-3">
                 <label for="header_line1" class="form-label">Päise rida 1</label>
                 <input type="text" name="header_line1" id="header_line1" class="form-control"
-                    value="{{ old('header_line1') }}">
+                    value="{{ old('header_line1', $menu->header_line1 ?? '') }}">
             </div>
 
             <div class="mb-3">
                 <label for="header_line2" class="form-label">Päise rida 2</label>
                 <input type="text" name="header_line2" id="header_line2" class="form-control"
-                    value="{{ old('header_line2') }}">
+                    value="{{ old('header_line1', $menu->header_line2 ?? '') }}">
             </div>
 
             <div class="mb-3">
                 <label for="header_line3" class="form-label">Päise rida 3</label>
                 <input type="text" name="header_line3" id="header_line3" class="form-control"
-                    value="{{ old('header_line3') }}">
+                    value="{{ old('header_line1', $menu->header_line3 ?? '') }}">
             </div>
 
 
