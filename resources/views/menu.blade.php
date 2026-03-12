@@ -83,54 +83,56 @@
         {{-- KATEGOORIAD JA TOIDUD --}}
         @forelse($categories as $category)
 
-            <table class="table table-sm w-100 mb-3">
-                {{-- KATEGOORIA PÄIS --}}
-                <tr class="d-flex">
-                    <td
-                        class="col-8 py-2 ps-2 fw-bold {{ Str::lower($category->name) === 'koolilõuna' ? 'text-danger' : '' }}">
-                        {{ Str::upper($category->name) }}
-                    </td>
-                    <td class="col-4"></td>
-                </tr>
-
-                {{-- TOIDUD --}}
-                @foreach ($category->items as $item)
-                    <tr class="d-flex  ">
-
-                        <td class="col-8 py-2 ps-2 {{ $item->is_available ? '' : 'blur-item' }}">
-                            {{ Str::upper($item->name) }}
-
-                            {{-- Kuvame kõik allergeenid --}}
-                            @foreach ($item->allergens as $allergen)
-                                <span class="badge bg-secondary">{{ $allergen->code }}</span>
-                            @endforeach
+            @if ($category->items->isNotEmpty())
+                <table class="table table-sm w-100 mb-3">
+                    {{-- KATEGOORIA PÄIS --}}
+                    <tr class="d-flex">
+                        <td
+                            class="col-8 py-2 ps-2 fw-bold {{ Str::lower($category->name) === 'koolilõuna' ? 'text-danger' : '' }}">
+                            {{ Str::upper($category->name) }}
                         </td>
-
-                        <td class="col-4 py-2 text-end pe-2 {{ $item->is_available ? '' : 'blur-item' }}">
-
-                            {{-- Kui täishind puudub täielikult → ära kuva midagi --}}
-                            @if (is_null($item->full_price))
-                                {{-- tühi --}}
-
-                                {{-- Kui täishind on TÄPSELT 0.00 → Prae hinna sees --}}
-                            @elseif ((float) $item->full_price === 0.0)
-                                Prae hinna sees
-
-                                {{-- Kui poolhind puudub → kuva ainult täishind --}}
-                            @elseif (is_null($item->half_price))
-                                {{ number_format($item->full_price, 2) }} €
-
-                                {{-- Kui mõlemad hinnad olemas → kuva full / half --}}
-                            @else
-                                {{ number_format($item->full_price, 2) }} € /
-                                {{ number_format($item->half_price, 2) }} €
-                            @endif
-
-                        </td>
-
+                        <td class="col-4"></td>
                     </tr>
-                @endforeach
-            </table>
+
+                    {{-- TOIDUD --}}
+                    @foreach ($category->items as $item)
+                        <tr class="d-flex">
+
+                            <td class="col-8 py-2 ps-2 {{ $item->is_available ? '' : 'blur-item' }}">
+                                {{ Str::upper($item->name) }}
+
+                                {{-- Kuvame kõik allergeenid --}}
+                                @foreach ($item->allergens as $allergen)
+                                    <span class="badge bg-secondary">{{ $allergen->code }}</span>
+                                @endforeach
+                            </td>
+
+                            <td class="col-4 py-2 text-end pe-2 {{ $item->is_available ? '' : 'blur-item' }}">
+
+                                {{-- Kui täishind puudub täielikult → ära kuva midagi --}}
+                                @if (is_null($item->full_price))
+                                    {{-- tühi --}}
+
+                                    {{-- Kui täishind on TÄPSELT 0.00 → Prae hinna sees --}}
+                                @elseif ((float) $item->full_price === 0.0)
+                                    Prae hinna sees
+
+                                    {{-- Kui poolhind puudub → kuva ainult täishind --}}
+                                @elseif (is_null($item->half_price))
+                                    {{ number_format($item->full_price, 2) }} €
+
+                                    {{-- Kui mõlemad hinnad olemas → kuva full / half --}}
+                                @else
+                                    {{ number_format($item->full_price, 2) }} € /
+                                    {{ number_format($item->half_price, 2) }} €
+                                @endif
+
+                            </td>
+
+                        </tr>
+                    @endforeach
+                </table>
+            @endif
 
         @empty
 
