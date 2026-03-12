@@ -6,7 +6,7 @@
     <div class="container py-4">
         <div class="d-flex justify-content-between align-items-center mb-4">
             <div>
-                <h1 class="h3 mb-1">Statistika</h1>
+                <h1 class="mb-3">Statistika</h1>
                 <p class="text-muted mb-0">Ülevaade toitudest ja menüütüüpidest</p>
             </div>
         </div>
@@ -14,7 +14,7 @@
         {{-- Päise kokkuvõtte kaardid --}}
         <div class="row g-3 mb-4">
             <div class="col-md-6 col-xl-4">
-                <div class="card shadow-sm border-0 h-100">
+                <div class="card shadow-sm border-1 h-100">
                     <div class="card-body py-3">
                         <div class="text-muted small mb-1">Menüüsid kokku</div>
                         <div class="fs-4 fw-bold">{{ $summary['menu_count'] }}</div>
@@ -29,7 +29,7 @@
             </div>
 
             <div class="col-md-6 col-xl-4">
-                <div class="card shadow-sm border-0 h-100">
+                <div class="card shadow-sm border-1 h-100">
                     <div class="card-body py-3">
                         <div class="text-muted small mb-1">Erinevaid toite</div>
                         <div class="fs-4 fw-bold">{{ $summary['unique_foods_count'] }}</div>
@@ -44,7 +44,7 @@
             </div>
 
             <div class="col-md-6 col-xl-4">
-                <div class="card shadow-sm border-0 h-100">
+                <div class="card shadow-sm border-1 h-100">
                     <div class="card-body py-3">
                         <div class="text-muted small mb-1">Menüütüüpe kokku</div>
                         <div class="fs-4 fw-bold">{{ $summary['menu_type_count'] }}</div>
@@ -98,7 +98,7 @@
                     </div>
 
                     <div class="col-md-4 d-flex align-items-end">
-                        <button type="submit" class="btn btn-dark w-100">
+                        <button type="submit" class="btn btn-primary w-100">
                             Rakenda filter
                         </button>
                     </div>
@@ -161,7 +161,7 @@
                     </div>
 
                     <div class="col-md-3 d-grid">
-                        <button type="submit" class="btn btn-dark">
+                        <button type="submit" class="btn btn-primary w-100">
                             Otsi
                         </button>
                     </div>
