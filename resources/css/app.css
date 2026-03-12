@@ -3,3 +3,7 @@
 .blur-item {
     filter: blur(4px);
 }
+
+.menu-font {
+    font-family: "Lucida Handwriting", cursive;
+}
