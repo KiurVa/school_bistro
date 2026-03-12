@@ -26,7 +26,7 @@
 
 @push('scripts')
     <script>
-        setTimeout(function() {
+        setInterval(function() {
             location.reload();
         }, 30000); // 30000 ms = 30 sekundit
     </script>
