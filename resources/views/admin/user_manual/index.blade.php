@@ -331,9 +331,9 @@
                         <div class="accordion-body">
 
                             <p>
-                                Kasutajate halduse lehel saab lisada uusi kasutajaid, vaadata olemasolevaid kasutajaid
+                                Kasutajate halduse lehel saab Administraator lisada uusi kasutajaid, vaadata olemasolevaid kasutajaid
                                 ning muuta või kustutada nende andmeid. Selle vaate kaudu hallatakse süsteemi ligipääsu
-                                ja kasutajarolle.
+                                ja kasutajarolle. Tavakasutajal see vaade puudub.
                             </p>
 
                             <h6 class="fw-semibold mt-3">Uue kasutaja lisamine</h6>
@@ -342,7 +342,7 @@
                                 <li>Sisesta kasutaja e-posti aadress.</li>
                                 <li>Sisesta parool ja parooli kinnitus.</li>
                                 <li>Vajadusel määra kasutaja <strong>Admin</strong> õigustega kasutajaks.</li>
-                                <li>Määra, kas kasutaja on <strong>Aktiivne</strong>.</li>
+                                <li>Määra, kas kasutaja on <strong>Aktiivne/Mitteaktiivne</strong>.</li>
                                 <li>Vajuta <strong>„Lisa kasutaja“</strong>.</li>
                             </ol>
 
@@ -362,7 +362,7 @@
                             </ol>
 
                             <p>
-                                Kui parooli ei soovita muuta, võib parooli väljad jätta tühjaks.
+                                Kui parooli ei soovita muuta, võib väljad jätta tühjaks.
                             </p>
 
                             <h6 class="fw-semibold mt-3">Kasutaja kustutamine</h6>
