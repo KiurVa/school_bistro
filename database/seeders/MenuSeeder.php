@@ -115,7 +115,7 @@ class MenuSeeder extends Seeder
                     'menu_id' => $menuId,
                     'category_id' => $category->id,
                     'name' => $food,
-                    'full_price' => $categoryName === 'Koolilõuna' ? 0 : rand(350, 650) / 100,
+                    'full_price' => $categoryName === 'Koolilõuna' ? null : rand(350, 650) / 100,
                     'half_price' => $categoryName === 'Koolilõuna' ? null : rand(150, 350) / 100,
                     'is_available' => true,
                     'order_index' => $order++,
