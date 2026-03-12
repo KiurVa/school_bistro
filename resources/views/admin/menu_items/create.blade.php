@@ -4,9 +4,9 @@
 
 @section('content')
 
-    <div class="container">
+    <div class="container mt-4">
 
-        <h3>Toidu lisamine</h3>
+        <h1 class="mb-3">Toidu lisamine</h1>
 
         <form id="createForm" action="{{ route('items.store', $menu) }}" method="POST">
             @csrf
@@ -31,13 +31,13 @@
 
             {{-- PRICES --}}
             <div class="row">
-                <div class="col-md-6 mb-3">
+                <div class="col-md-2 mb-3">
                     <label class="form-label">Täishind (€)</label>
                     <input type="number" step="0.01" name="full_price" class="form-control"
                         value="{{ old('full_price') }}">
                 </div>
 
-                <div class="col-md-6 mb-3">
+                <div class="col-md-2 mb-3">
                     <label class="form-label">Poolhind (€)</label>
                     <input type="number" step="0.01" name="half_price" class="form-control"
                         value="{{ old('half_price') }}">

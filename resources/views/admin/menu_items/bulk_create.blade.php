@@ -38,12 +38,15 @@
 
     <div class="container">
 
+        <div class="d-flex justify-content-between align-items-center mb-3">
+
         {{-- Pealkiri --}}
-        <h2>
+        <h2 class="mb-0">
             Lisa toidud menüüsse:
             <strong>{{ $menu->display_name }}</strong>
             ({{ $menu->date->format('d.m.Y') }})
         </h2>
+
         {{-- Nupud --}}
         <div class="d-flex gap-2">
             <button type="submit" form="bulkForm" class="btn btn-primary">
@@ -55,11 +58,13 @@
             </a>
         </div>
 
+    </div>
+
         <form id="bulkForm" action="{{ route('menus.items.bulkSave', $menu) }}" method="POST">
             @csrf
 
             @foreach ($categories as $category)
-                <h3 class="mt-4">{{ $category->name }}</h3>
+                <h5 class="mt-2">{{ $category->name }}</h5>
 
                 <div id="category-{{ $category->id }}">
 

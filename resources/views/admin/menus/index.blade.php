@@ -99,7 +99,6 @@
                             <a href="{{ route('menus.duplicate', $menu) }}" class="btn btn-sm btn-outline-secondary">
                                 Kopeeri
                             </a>
-                            </form>
                         </td>
                     </tr>
                 @endforeach

@@ -5,7 +5,7 @@
 @section('content')
     <div class="container mt-4">
 
-        <h1 class="mb-4">Kategooriate haldus</h1>
+        <h1 class="mb-3">Kategooriate haldus</h1>
 
         {{-- Lisamisvorm --}}
         <div class="card mb-4">

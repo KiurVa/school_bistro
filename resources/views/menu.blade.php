@@ -33,7 +33,7 @@
 @endpush
 
 @section('content')
-    <div class="menu-overlay">
+    <div class="menu-overlay menu-font">
         <div class="container-fluid">
 
             {{-- KUUPÄEV --}}
@@ -94,12 +94,11 @@
                 @if ($category->items->isNotEmpty())
                     <table class="table table-sm w-100 mb-3">
                         {{-- KATEGOORIA PÄIS --}}
-                        <tr class="d-flex">
+                        <tr>
                             <td
-                                class="col-8 py-2 ps-2 fw-bold {{ Str::lower($category->name) === 'koolilõuna' ? 'text-danger' : '' }}">
+                                class="py-2 ps-2 bg-secondary-subtle {{ Str::lower($category->name) === 'koolilõuna' ? 'text-danger' : 'text-primary' }}">
                                 {{ Str::upper($category->name) }}
                             </td>
-                            <td class="col-4"></td>
                         </tr>
 
                         {{-- TOIDUD --}}

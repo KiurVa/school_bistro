@@ -2,7 +2,7 @@
 
 @section('content')
 <div class="container mt-4">
-    <h1 class="mb-4">Taustapiltide haldus</h1>
+    <h1 class="mb-3">Taustapiltide haldus</h1>
 
     {{-- Uue pildi üleslaadimine --}}
     <div class="card mb-4">
