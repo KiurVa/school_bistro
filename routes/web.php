@@ -43,6 +43,7 @@ Route::middleware('auth')->group(function () {
     // Nähtavaks (aktiivseks) määramine
     Route::post('/menus/{menu}/set-visible', [AdminMenu::class, 'setVisible'])->name('menus.setVisible');
     Route::post('/menus/{menu}/unset-visible', [AdminMenu::class, 'unsetVisible'])->name('menus.unsetVisible');
+    Route::post('/menus/{menu}/duplicate', [AdminMenu::class, 'duplicate'])->name('menus.duplicate');
 
 
     //Menüü toitude haldus

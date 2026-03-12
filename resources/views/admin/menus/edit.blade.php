@@ -14,7 +14,7 @@
             <div class="mb-3">
                 <label class="form-label">Kuupäev</label>
                 <input type="date" name="date" class="form-control"
-                    value="{{ old('date', $menu->date->format('Y-m-d')) }}">
+                    value="{{ old('date', $menu->date->format('Y-m-d')) }}" readonly>
             </div>
 
             {{-- Menüü tüüp --}}

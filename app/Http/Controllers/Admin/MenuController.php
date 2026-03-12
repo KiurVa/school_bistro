@@ -7,6 +7,7 @@ use App\Models\Category;
 use App\Models\Menu;
 use App\Models\MenuType;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 
 class MenuController extends Controller
@@ -17,7 +18,7 @@ class MenuController extends Controller
     public function index()
     {
         $menus = Menu::with('type')
-            ->orderBy('date', 'desc')
+            ->orderBy('created_at', 'desc')
             ->paginate(20); // lehekülgede kaupa
 
         return view('admin.menus.index', compact('menus'));
@@ -43,11 +44,22 @@ class MenuController extends Controller
     {
         $request->validate([
             'menu_type_id' => 'required|exists:menu_types,id',
-            'date'         => 'required|date|unique:menus,date,NULL,id,menu_type_id,' . $request->menu_type_id,
+            'date' => [
+                'required',
+                'date',
+                Rule::unique('menus')->where(
+                    fn($query) =>
+                    $query->where('menu_type_id', $request->menu_type_id)
+                ),
+            ],
             'header_line1' => 'nullable|string|max:255',
             'header_line2' => 'nullable|string|max:255',
             'header_line3' => 'nullable|string|max:255',
             'is_visible'   => 'boolean',
+        ], [
+            'date.unique' => 'Selle menüü tüübiga menüü on tänaseks juba olemas.',
+        ], [
+            'date' => 'kuupäev',
         ]);
 
         // Võtame ainult lubatud väljad
@@ -113,13 +125,6 @@ class MenuController extends Controller
     {
         $request->validate([
             'menu_type_id' => 'required|exists:menu_types,id',
-            'date' => [
-                'required',
-                'date',
-                Rule::unique('menus')
-                    ->where('menu_type_id', $request->menu_type_id)
-                    ->ignore($menu->id),
-            ],
             'header_line1' => 'nullable|string|max:255',
             'header_line2' => 'nullable|string|max:255',
             'header_line3' => 'nullable|string|max:255',
@@ -129,7 +134,6 @@ class MenuController extends Controller
         // Võtame ainult lubatud väljad
         $data = $request->only([
             'menu_type_id',
-            'date',
             'header_line1',
             'header_line2',
             'header_line3',
@@ -144,6 +148,20 @@ class MenuController extends Controller
             Menu::where('is_visible', true)
                 ->where('id', '!=', $menu->id)
                 ->update(['is_visible' => false]);
+        }
+
+        // kontroll enne update, et kaks sama menüütüüpi pole
+        $exists = Menu::where('menu_type_id', $request->menu_type_id)
+            ->whereDate('date', $menu->date)
+            ->where('id', '!=', $menu->id)
+            ->exists();
+
+        if ($exists) {
+            return back()
+                ->withErrors([
+                    'menu_type_id' => 'Selle menüü tüübiga menüü on tänaseks juba olemas.'
+                ])
+                ->withInput();
         }
 
         $menu->update($data);
@@ -201,5 +219,45 @@ class MenuController extends Controller
         return redirect()
             ->route('menus.index')
             ->with('success', 'Menüü on nüüd mitteaktiivne.');
+    }
+
+    /**
+     * Menüü kopeerimine
+     */
+    public function duplicate(Menu $menu)
+    {
+        $today = now()->toDateString();
+
+        $exists = Menu::where('menu_type_id', $menu->menu_type_id)
+            ->whereDate('date', $today)
+            ->exists();
+
+        if ($exists) {
+            return redirect()->route('menus.index')
+                ->with('error', 'Selle menüü tüübiga menüü on tänaseks juba olemas.');
+        }
+
+        DB::transaction(function () use ($menu) {
+
+            $menu->load('items.allergens');
+
+            $newMenu = $menu->replicate();
+            $newMenu->date = now()->toDateString();
+            $newMenu->save();
+
+            foreach ($menu->items as $item) {
+
+                $newItem = $item->replicate();
+                $newItem->menu_id = $newMenu->id;
+                $newItem->save();
+
+                $newItem->allergens()->sync(
+                    $item->allergens->pluck('id')
+                );
+            }
+        });
+
+        return redirect()->route('menus.index')
+            ->with('success', 'Menüü kopeeritud');
     }
 }
