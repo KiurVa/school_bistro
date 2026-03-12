@@ -3,22 +3,9 @@
 @section('title', 'Muuda menüüd')
 
 @section('content')
-    @if ($errors->any())
-        <div class="alert alert-danger">
-            <ul>
-                @foreach ($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
-        </div>
-    @endif
     <div class="container mt-4">
 
         <h1>Muuda menüüd</h1>
-        @if (session('success'))
-            <div class="alert alert-success">{{ session('success') }}</div>
-        @endif
-
         <form method="POST" action="{{ route('menus.update', $menu) }}">
             @csrf
             @method('PUT')
