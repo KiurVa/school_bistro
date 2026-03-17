@@ -6,9 +6,17 @@
 
 .menu-font {
     font-family: "Lucida Handwriting", cursive;
+    font-weight: 700;
+    font-size: 1.3rem;
 }
 
 .food-row.is-invalid-row {
     border-color: #dc3545;
     background-color: #fff5f5;
+}
+
+.menu-overlay {
+    min-height: 100vh;
+    background: rgba(255, 255, 255, 0.82);
+    backdrop-filter: blur(2px);
 }
