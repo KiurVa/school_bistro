@@ -48,42 +48,15 @@ class StatisticsController extends Controller
         }
 
         $popularFoods = $popularFoodsQuery
-            ->selectRaw("
-                LOWER(REPLACE(REPLACE(menu_items.name, ' ', ''), '-', '')) as normalized_name,
-                COUNT(*) as total
-            ")
-            ->groupBy('normalized_name')
+            ->select(
+                'menu_items.normalized_name',
+                DB::raw('COUNT(*) as total'),
+                DB::raw('MAX(menu_items.name) as display_name')
+            )
+            ->groupBy('menu_items.normalized_name')
             ->orderByDesc('total')
             ->limit(10)
             ->get();
-
-        // Leiame iga grupi kõige sagedamini esinenud nimekuju
-        $popularFoods->transform(function ($food) use ($topCategory, $topMenuType) {
-            $variantQuery = MenuItem::query()
-                ->join('menus', 'menu_items.menu_id', '=', 'menus.id')
-                ->select('menu_items.name', DB::raw('COUNT(*) as c'))
-                ->whereRaw(
-                    "LOWER(REPLACE(REPLACE(menu_items.name, ' ', ''), '-', '')) = ?",
-                    [$food->normalized_name]
-                );
-
-            if (!empty($topCategory)) {
-                $variantQuery->where('menu_items.category_id', $topCategory);
-            }
-
-            if (!empty($topMenuType)) {
-                $variantQuery->where('menus.menu_type_id', $topMenuType);
-            }
-
-            $variant = $variantQuery
-                ->groupBy('menu_items.name')
-                ->orderByDesc('c')
-                ->first();
-
-            $food->display_name = ucfirst(mb_strtolower(trim($variant->name)));
-
-            return $food;
-        });
 
         // -----------------------------------
         // Toidu esinemise ajalugu
@@ -92,18 +65,17 @@ class StatisticsController extends Controller
         $foodHistory = collect();
 
         if ($search !== '') {
-            $normalizedSearch = mb_strtolower(str_replace([' ', '-'], '', $search));
+            $search = trim(urldecode($request->get('search', '')));
+            $normalizedSearch = strtolower(str_replace([' ', '-'], '', $search));
 
             $foodHistory = MenuItem::query()
                 ->with(['menu.type', 'category', 'allergens'])
-                ->whereRaw(
-                    "LOWER(REPLACE(REPLACE(name, ' ', ''), '-', '')) LIKE ?",
-                    ['%' . $normalizedSearch . '%']
-                )
-                ->whereHas('menu')
-                ->get()
-                ->sortByDesc(fn ($item) => optional($item->menu)->date)
-                ->values();
+                ->join('menus', 'menu_items.menu_id', '=', 'menus.id')
+                ->where('menu_items.normalized_name', 'like', '%' . $normalizedSearch . '%')
+                ->orderByDesc('menus.date')
+                ->select('menu_items.*')
+                ->paginate(20)
+                ->appends(['search' => $search]);
         }
 
         // -----------------------------------
@@ -130,9 +102,8 @@ class StatisticsController extends Controller
             ->first();
 
         $uniqueFoodsCount = MenuItem::query()
-            ->selectRaw("LOWER(REPLACE(REPLACE(name, ' ', ''), '-', '')) as normalized_name")
-            ->distinct()
-            ->count();
+            ->distinct('normalized_name')
+            ->count('normalized_name');
 
         $summary = [
             // Menüüsid kokku

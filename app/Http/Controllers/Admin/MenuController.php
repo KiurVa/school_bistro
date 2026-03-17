@@ -88,7 +88,7 @@ class MenuController extends Controller
 
             foreach ($sourceMenu->items as $item) {
 
-                $newItem = $item->replicate();
+                $newItem = $item->replicate(['normalized_name']);
                 $newItem->menu_id = $newMenu->id;
                 $newItem->save();
 
