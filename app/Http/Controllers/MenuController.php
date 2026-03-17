@@ -8,7 +8,6 @@ use App\Models\BackgroundImage;
 use App\Models\Menu;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Log;
 
 class MenuController extends Controller
 {
