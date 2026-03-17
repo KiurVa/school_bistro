@@ -16,6 +16,7 @@ use App\Http\Controllers\Admin\StatisticsController;
 // Avalik (kasutaja) vaade
 // ------------------------------
 Route::get('/', [MenuController::class, 'show'])->name('menu');
+Route::get('/menu/last-modified', [MenuController::class, 'lastModified'])->name('menu.lastModified');
 
 
 // ------------------------------

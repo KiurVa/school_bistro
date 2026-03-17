@@ -26,9 +26,29 @@
 
 @push('scripts')
     <script>
-        setInterval(function() {
-            location.reload();
-        }, 30000); // 30000 ms = 30 sekundit
+        // Salvestame lehe laadimise hetke serveri timestampi
+        let knownTimestamp = null;
+
+        function checkForUpdates() {
+            fetch('{{ route('menu.lastModified') }}')
+                .then(response => response.json())
+                .then(data => {
+                    if (knownTimestamp === null) {
+                        // Esimene kontroll – salvestame algväärtuse
+                        knownTimestamp = data.timestamp;
+                    } else if (data.timestamp !== knownTimestamp) {
+                        // Timestamp muutus → menüü on uuenenud, laadime lehe uuesti
+                        location.reload();
+                    }
+                })
+                .catch(() => {
+                    // Ühenduseviga – ignoreerime, proovime uuesti 30s pärast
+                });
+        }
+
+        // Kontrollime kohe lehe laadimisel ja seejärel iga 30 sekundi tagant
+        checkForUpdates();
+        setInterval(checkForUpdates, 30000);
     </script>
 @endpush
 

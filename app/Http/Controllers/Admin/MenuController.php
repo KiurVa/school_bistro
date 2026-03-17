@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\MenuController as ControllersMenuController;
 use App\Models\Category;
 use App\Models\Menu;
 use App\Models\MenuType;
@@ -28,12 +29,12 @@ class MenuController extends Controller
      * Kuva vorm uue menüü loomiseks.
      */
     public function create()
-{
-    $menuTypes = MenuType::all();
-    $menu = new Menu();
+    {
+        $menuTypes = MenuType::all();
+        $menu = new Menu();
 
-    return view('admin.menus.create', compact('menuTypes', 'menu'));
-}
+        return view('admin.menus.create', compact('menuTypes', 'menu'));
+    }
 
     /**
      * Salvesta uus menüü andmebaasi.
@@ -78,6 +79,7 @@ class MenuController extends Controller
         }
 
         $newMenu = Menu::create($data);
+        ControllersMenuController::clearCache();
 
         if ($request->duplicate_from) {
 
@@ -190,6 +192,7 @@ class MenuController extends Controller
         }
 
         $menu->update($data);
+        ControllersMenuController::clearCache();
 
         return redirect()
             ->route('menus.index')
@@ -202,6 +205,7 @@ class MenuController extends Controller
     public function destroy(Menu $menu)
     {
         $menu->delete();
+        ControllersMenuController::clearCache();
 
         return redirect()
             ->route('menus.index')
@@ -224,6 +228,7 @@ class MenuController extends Controller
         Menu::where('is_visible', true)->update(['is_visible' => false]);
 
         $menu->update(['is_visible' => true]);
+        ControllersMenuController::clearCache();
 
         return redirect()
             ->route('menus.index')
@@ -244,6 +249,7 @@ class MenuController extends Controller
         }
 
         $menu->update(['is_visible' => false]);
+        ControllersMenuController::clearCache();
 
         return redirect()
             ->route('menus.index')

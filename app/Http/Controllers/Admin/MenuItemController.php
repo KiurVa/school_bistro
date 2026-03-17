@@ -8,6 +8,7 @@ use App\Models\Menu;
 use App\Models\MenuItem;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\MenuController;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
@@ -92,6 +93,7 @@ class MenuItemController extends Controller
         ]);
 
         $item->allergens()->sync($request->allergens ?? []);
+        MenuController::clearCache();
 
         return redirect()
             ->route('menus.show', $menu)
@@ -170,6 +172,7 @@ class MenuItemController extends Controller
         ]);
 
         $item->allergens()->sync($request->allergens ?? []);
+        MenuController::clearCache();
 
         return redirect()
             ->route('menus.show', $menu)
@@ -189,6 +192,7 @@ class MenuItemController extends Controller
 
         $item->allergens()->detach();
         $item->delete();
+        MenuController::clearCache();
 
         return redirect()
             ->route('menus.show', $menu)
@@ -346,6 +350,8 @@ class MenuItemController extends Controller
             }
         });
 
+        MenuController::clearCache();
+
         return redirect()
             ->route('menus.show', $menu)
             ->with('success', 'Toidud salvestati edukalt!');
@@ -360,6 +366,7 @@ class MenuItemController extends Controller
         }
 
         $item->update(['is_available' => true]);
+        MenuController::clearCache();
 
         return redirect()
             ->route('menus.show', $menu)
@@ -375,6 +382,7 @@ class MenuItemController extends Controller
         }
 
         $item->update(['is_available' => false]);
+        MenuController::clearCache();
 
         return redirect()
             ->route('menus.show', $menu)

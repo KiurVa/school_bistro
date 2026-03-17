@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\MenuController;
 use App\Models\BackgroundImage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -48,6 +49,7 @@ class BackgroundImageController extends Controller
         }
 
         $background->save();
+        MenuController::clearCache();
 
         return redirect()
             ->route('backgrounds.index')
@@ -75,6 +77,7 @@ class BackgroundImageController extends Controller
             $background->save();
             $message = 'Taustapilt märgiti aktiivseks.';
         }
+        MenuController::clearCache();
 
         return redirect()
             ->route('backgrounds.index')
@@ -91,6 +94,7 @@ class BackgroundImageController extends Controller
         }
 
         $background->delete();
+        MenuController::clearCache();
 
         return redirect()
             ->route('backgrounds.index')
