@@ -284,8 +284,12 @@ class MenuItemController extends Controller
                 ->withInput();
         }
 
-        DB::transaction(function () use ($request, $menu) {
-            foreach ($request->items as $categoryId => $rows) {
+        $existingItems = MenuItem::where('menu_id', $menu->id)
+            ->get()
+            ->keyBy('id');
+
+        DB::transaction(function () use ($request, $menu, $existingItems) {
+            foreach ($request->input('items') as $categoryId => $rows) {
                 foreach ($rows as $row) {
                     $itemId = $row['id'] ?? null;
                     $name = trim($row['name'] ?? '');
@@ -294,10 +298,10 @@ class MenuItemController extends Controller
                      * DELETE
                      */
                     if (!empty($row['delete']) && $itemId) {
-                        MenuItem::where('menu_id', $menu->id)
-                            ->find($itemId)
-                            ?->delete();
-
+                        if (isset($existingItems[$itemId])) {
+                            $existingItems[$itemId]->delete();
+                            unset($existingItems[$itemId]);
+                        }
                         continue;
                     }
 
@@ -314,8 +318,7 @@ class MenuItemController extends Controller
                      * UPDATE olemasolev kirje
                      */
                     if ($itemId) {
-                        $item = MenuItem::where('menu_id', $menu->id)
-                            ->find($itemId);
+                        $item = $existingItems[$itemId] ?? null;
 
                         if ($item) {
                             $item->update([
@@ -340,12 +343,15 @@ class MenuItemController extends Controller
                             'is_available' => isset($row['is_available']),
                             'order_index' => 0,
                         ]);
+                        $existingItems[$item->id] = $item;
                     }
 
                     /*
                      * ALLERGENID
                      */
-                    $item->allergens()->sync($row['allergens'] ?? []);
+                    if (isset($row['allergens'])) {
+                        $item->allergens()->sync($row['allergens']);
+                    }
                 }
             }
         });
