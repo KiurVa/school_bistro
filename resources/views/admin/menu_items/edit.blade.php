@@ -70,7 +70,7 @@
                             <input type="checkbox" name="allergens[]" value="{{ $allergen->id }}" class="form-check-input"
                                 {{ $item->allergens->contains($allergen->id) ? 'checked' : '' }}>
                             <label class="form-check-label">
-                                {{ $allergen->code }} – {{ $allergen->name }}
+                                {{ $allergen->code }}
                             </label>
                         </div>
                     @endforeach

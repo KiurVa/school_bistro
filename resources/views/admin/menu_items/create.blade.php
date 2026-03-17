@@ -68,7 +68,7 @@
                             <input type="checkbox" name="allergens[]" value="{{ $allergen->id }}" class="form-check-input"
                                 {{ in_array($allergen->id, old('allergens', [])) ? 'checked' : '' }}>
                             <label class="form-check-label">
-                                {{ $allergen->code }} – {{ $allergen->name }}
+                                {{ $allergen->code }}
                             </label>
                         </div>
                     @endforeach
