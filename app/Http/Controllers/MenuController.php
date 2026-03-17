@@ -8,47 +8,51 @@ use App\Models\BackgroundImage;
 use App\Models\Menu;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 
 class MenuController extends Controller
 {
     // Cache'i võtmed – kasutatakse ka admin-kontrollerites tühjendamiseks
     const CACHE_KEY      = 'menu.public';
     const MODIFIED_KEY   = 'menu.last_modified';
-    const CACHE_SECONDS  = 30;
+    const CACHE_SECONDS  = 3600;
 
     public function show(Request $request)
     {
         // Täna menüü
-        $menu = Menu::where('date', now()->toDateString())
-            ->where('is_visible', true)
-            ->first();
-
-        // Kui tänase menüü kirjet pole, siis $menu jääb nulliks
-        // Blade oskab ise kuvada "Menüüd pole veel sisestatud"
-        $categories = collect(); // tühi kogumik
-
-        if ($menu) {
-            // Kui menüü leiti → laadime kategooriad + toidud
-            $categories = Category::where('menu_type_id', $menu->menu_type_id)
+        $data = Cache::remember(self::CACHE_KEY, self::CACHE_SECONDS, function () {
+            $menu = Menu::where('date', now()->toDateString())
                 ->where('is_visible', true)
-                ->orderBy('order_index')
-                ->with(['items' => function ($query) use ($menu) {
-                    $query->where('menu_id', $menu->id)
-                        ->orderBy('order_index')
-                        ->with('allergens');
-                }])
-                ->get()
-                ->filter(function ($category) {
-                    return $category->items->isNotEmpty();
-                })
-                ->values();
-        }
+                ->first();
 
-        $background = BackgroundImage::where('is_active', true)
-            ->orderByDesc('created_at')
-            ->first();
+            // Kui tänase menüü kirjet pole, siis $menu jääb nulliks
+            // Blade oskab ise kuvada "Menüüd pole veel sisestatud"
+            $categories = collect(); // tühi kogumik
 
-        return view('menu', compact('menu', 'categories', 'background'));
+            if ($menu) {
+                // Kui menüü leiti → laadime kategooriad + toidud
+                $categories = Category::where('menu_type_id', $menu->menu_type_id)
+                    ->where('is_visible', true)
+                    ->orderBy('order_index')
+                    ->with(['items' => function ($query) use ($menu) {
+                        $query->where('menu_id', $menu->id)
+                            ->orderBy('order_index')
+                            ->with('allergens');
+                    }])
+                    ->get()
+                    ->filter(function ($category) {
+                        return $category->items->isNotEmpty();
+                    })
+                    ->values();
+            }
+
+            $background = BackgroundImage::where('is_active', true)
+                ->first();
+
+            return compact('menu', 'categories', 'background'); // ← andmed, mitte view
+        });
+
+        return view('menu', $data);
     }
 
     /**
