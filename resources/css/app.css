@@ -7,3 +7,8 @@
 .menu-font {
     font-family: "Lucida Handwriting", cursive;
 }
+
+.food-row.is-invalid-row {
+    border-color: #dc3545;
+    background-color: #fff5f5;
+}
