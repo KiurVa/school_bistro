@@ -127,7 +127,7 @@
                         <tr>
                             <td>{{ $index + 1 }}</td>
                             <td>
-                                <a href="{{ route('statistics.index', ['search' => urlencode($food->display_name)]) }}"
+                                <a href="{{ route('statistics.index', ['search' => $food->display_name]) }}"
                                     class="text-decoration-none">
                                     {{ ucfirst(mb_strtolower($food->display_name)) }}
                                 </a>

@@ -190,7 +190,7 @@ class MenuItemController extends Controller
             return $response;
         }
 
-        $item->allergens()->detach();
+        $item->allergens();
         $item->delete();
         MenuController::clearCache();
 

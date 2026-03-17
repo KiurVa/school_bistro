@@ -65,7 +65,6 @@ class StatisticsController extends Controller
         $foodHistory = collect();
 
         if ($search !== '') {
-            $search = trim(urldecode($request->get('search', '')));
             $normalizedSearch = strtolower(str_replace([' ', '-'], '', $search));
 
             $foodHistory = MenuItem::query()

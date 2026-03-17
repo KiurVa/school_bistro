@@ -57,50 +57,37 @@ class MenuController extends Controller
             'header_line2' => 'nullable|string|max:255',
             'header_line3' => 'nullable|string|max:255',
             'is_visible'   => 'boolean',
+            'duplicate_from' => 'nullable|exists:menus,id',
         ], [
             'date.unique' => 'Selle menüü tüübiga menüü on tänaseks juba olemas.',
         ], [
             'date' => 'kuupäev',
         ]);
 
-        $data = $request->only([
-            'menu_type_id',
-            'date',
-            'header_line1',
-            'header_line2',
-            'header_line3',
-        ]);
 
+        $data = $request->only(['menu_type_id', 'date', 'header_line1', 'header_line2', 'header_line3',]);
         $isVisible = $request->boolean('is_visible');
         $data['is_visible'] = $isVisible;
-
-        if ($isVisible) {
-            Menu::where('is_visible', true)->update(['is_visible' => false]);
-        }
-
-        $newMenu = Menu::create($data);
-        ControllersMenuController::clearCache();
-
-        if ($request->duplicate_from) {
-
-            $sourceMenu = Menu::with('items.allergens')
-                ->find($request->duplicate_from);
-
-            foreach ($sourceMenu->items as $item) {
-
-                $newItem = $item->replicate(['normalized_name']);
-                $newItem->menu_id = $newMenu->id;
-                $newItem->save();
-
-                $newItem->allergens()->sync(
-                    $item->allergens->pluck('id')
-                );
+        DB::transaction(function () use ($request, $data, $isVisible) {
+            if ($isVisible) {
+                Menu::where('is_visible', true)->update(['is_visible' => false]);
             }
-        }
-
-        return redirect()
-            ->route('menus.index')
-            ->with('success', 'Menüü lisatud!');
+            $menu = Menu::create($data);
+            if ($request->duplicate_from) {
+                $sourceMenu = Menu::with('items.allergens')->find($request->duplicate_from);
+                if ($sourceMenu) {
+                    foreach ($sourceMenu->items as $item) {
+                        $newItem = $item->replicate(['normalized_name']);
+                        $newItem->menu_id = $menu->id;
+                        $newItem->save();
+                        $newItem->allergens()->sync($item->allergens->pluck('id'));
+                    }
+                }
+            }
+            return $menu;
+        });
+        ControllersMenuController::clearCache();
+        return redirect()->route('menus.index')->with('success', 'Menüü lisatud!');
     }
 
     /**
