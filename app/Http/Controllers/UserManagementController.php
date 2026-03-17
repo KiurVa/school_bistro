@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
 
 class UserManagementController extends Controller
 {
@@ -50,7 +49,7 @@ class UserManagementController extends Controller
         $user = new User();
         $user->name      = $validated['name'];
         $user->email     = $validated['email'];
-        $user->password  = Hash::make($validated['password']);
+        $user->password  = $validated['password'];
         $user->is_admin  = $request->boolean('is_admin');
         $user->is_active = $request->boolean('is_active', true);
         $user->save();
@@ -105,7 +104,7 @@ class UserManagementController extends Controller
         $user->is_active = $request->boolean('is_active', false);
 
         if (!empty($validated['password'])) {
-            $user->password = Hash::make($validated['password']);
+            $user->password = $validated['password'];
         }
 
         $user->save();
