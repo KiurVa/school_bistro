@@ -107,8 +107,6 @@ class MenuSeeder extends Seeder
                 continue;
             }
 
-            $order = 1;
-
             foreach ($items as $food) {
 
                 DB::table('menu_items')->insert([
@@ -118,7 +116,6 @@ class MenuSeeder extends Seeder
                     'full_price' => $categoryName === 'Koolilõuna' ? null : rand(350, 650) / 100,
                     'half_price' => $categoryName === 'Koolilõuna' ? null : rand(150, 350) / 100,
                     'is_available' => true,
-                    'order_index' => $order++,
                     'created_at' => now(),
                     'updated_at' => now(),
                 ]);
