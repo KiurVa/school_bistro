@@ -110,16 +110,57 @@
 
 </div>
 
+{{-- Peidetud template uute ridade kloonimiseks --}}
+<template id="row-template">
+<div class="food-row">
+    <div class="position-relative mb-1">
+        <input type="text" name="items[__CAT__][__IDX__][name]" class="food-name-input"
+            placeholder="Toidu nimi..." autocomplete="off" value="">
+    </div>
+    <div class="row">
+        <div class="col-md-2">
+            <label>Täishind</label>
+            <input type="text" inputmode="decimal" step="0.01" class="form-control"
+                name="items[__CAT__][__IDX__][full_price]" value="">
+        </div>
+        <div class="col-md-2">
+            <label>Poolhind</label>
+            <input type="text" inputmode="decimal" step="0.01" class="form-control"
+                name="items[__CAT__][__IDX__][half_price]" value="">
+        </div>
+        <div class="col-md-4 d-flex align-items-center pt-3 gap-3">
+            <div class="form-check">
+                <input type="checkbox" name="items[__CAT__][__IDX__][is_available]"
+                    class="form-check-input" checked>
+                <label class="form-check-label">Saadaval</label>
+            </div>
+        </div>
+    </div>
+    <div class="mt-2">
+        @foreach ($allergens as $al)
+            <label class="me-2">
+                <input type="checkbox" name="items[__CAT__][__IDX__][allergens][]" value="{{ $al->id }}">
+                {{ $al->code }}
+            </label>
+        @endforeach
+    </div>
+</div>
+</template>
+
 {{-- JS osa --}}
 <script>
     let rowCounter = 1000; // et igal real oleks unikaalne nimi
 
     function addRow(categoryId) {
-        fetch(`/menus/{{ $menu->id }}/items/row-template?category_id=` + categoryId + `&index=` + rowCounter)
-            .then(res => res.text())
-            .then(html => {
-                document.querySelector('#category-' + categoryId).insertAdjacentHTML('beforeend', html);
-            });
+        const html = document.getElementById('row-template').innerHTML
+            .replaceAll('__CAT__', categoryId)
+            .replaceAll('__IDX__', rowCounter);
+
+        const container = document.querySelector('#category-' + categoryId);
+        container.insertAdjacentHTML('beforeend', html);
+
+        const newInput = container.querySelector('.food-row:last-child .food-name-input');
+        setupAutocomplete(newInput);
 
         rowCounter++;
     }

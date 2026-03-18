@@ -95,6 +95,8 @@ class MenuController extends Controller
      */
     public function show(Menu $menu)
     {
+        $menu->loadMissing('type');
+
         $categories = Category::where('menu_type_id', $menu->menu_type_id)
             ->where('is_visible', true)
             ->orderBy('order_index')

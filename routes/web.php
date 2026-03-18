@@ -46,16 +46,6 @@ Route::middleware('auth')->group(function () {
 
     Route::scopeBindings()->prefix('menus/{menu}')->group(function () {
 
-        // Partial (Lisa rida bulk editorisse)
-        Route::get('items/row-template', function (\Illuminate\Http\Request $request) {
-            return view('admin.menu_items.partials.food_row', [
-                'category_id' => $request->category_id,
-                'index' => $request->index,
-                'allergens' => \App\Models\Allergen::orderBy('order_index')->get(),
-            ]);
-        })->name('menus.items.rowTemplate');
-
-
         // BULK editor
         Route::get('items/bulk', [MenuItemController::class, 'bulkCreate'])
             ->name('menus.items.bulk');

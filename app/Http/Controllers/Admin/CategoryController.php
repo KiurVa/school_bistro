@@ -16,13 +16,7 @@ class CategoryController extends Controller
             ->orderBy('order_index')
             ->get();
 
-        $menuTypes = MenuType::all()
-            ->sortBy(function ($type) {
-                $order = ['louna', 'hommik', 'uritus', 'laager'];
-                $position = array_search($type->name, $order, true);
-                return $position === false ? 999 : $position;
-            })
-            ->values();
+        $menuTypes = MenuType::orderByRaw("FIELD(name, 'louna', 'hommik', 'uritus', 'laager')")->get();
 
         return view('admin.categories.index', compact('categories', 'menuTypes'));
     }

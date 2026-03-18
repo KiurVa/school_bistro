@@ -22,8 +22,6 @@ return new class extends Migration
             $table->timestamps();
 
             $table->unique(['menu_item_id', 'allergen_id']);
-
-            $table->index('menu_item_id');
             $table->index('allergen_id');
         });
     }
