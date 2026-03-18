@@ -5,9 +5,10 @@
 }
 
 .menu-font {
-    font-family: "Lucida Handwriting", cursive;
+    font-family: "Patrick Hand", cursive;
     font-weight: 700;
-    font-size: 1.3rem;
+    font-size: 1.4rem;
+    letter-spacing: 0.05em;
 }
 
 .food-row.is-invalid-row {
