@@ -18,22 +18,6 @@
         padding: 8px;
     }
 
-    .suggestions-box {
-        position: absolute;
-        background: white;
-        border: 1px solid #ccc;
-        z-index: 9999;
-        width: 100%;
-    }
-
-    .suggestion-item {
-        padding: 6px 8px;
-        cursor: pointer;
-    }
-
-    .suggestion-item:hover {
-        background: #f0f0f0;
-    }
 </style>
 
 <div class="container">
@@ -110,6 +94,8 @@
 
 </div>
 
+@include('partials.autocomplete')
+
 {{-- Peidetud template uute ridade kloonimiseks --}}
 <template id="row-template">
 <div class="food-row">
@@ -163,57 +149,6 @@
         setupAutocomplete(newInput);
 
         rowCounter++;
-    }
-
-
-    function setupAutocomplete(inputEl) {
-
-        let box = document.createElement("div");
-        box.className = "suggestions-box";
-        inputEl.parentNode.appendChild(box);
-
-        inputEl.addEventListener("keyup", function() {
-            let term = this.value.trim();
-
-            if (term.length < 3) {
-                box.innerHTML = "";
-                return;
-            }
-
-            fetch(`/menu-item-search?term=` + encodeURIComponent(term))
-                .then(res => res.json())
-                .then(data => {
-                    box.innerHTML = "";
-
-                    if (!data.length) {
-                        return;
-                    }
-
-                    const capitalizeFirst = (value) => {
-                        if (!value) return value;
-                        return value.charAt(0).toUpperCase() + value.slice(1);
-                    };
-
-                    data.forEach(item => {
-                        let div = document.createElement("div");
-                        div.className = "suggestion-item";
-                        div.textContent = capitalizeFirst(item.name);
-
-                        div.onclick = () => {
-                            inputEl.value = capitalizeFirst(item.name);
-                            box.innerHTML = "";
-                        };
-
-                        box.appendChild(div);
-                    });
-                });
-        });
-
-        inputEl.addEventListener("blur", function() {
-            setTimeout(() => {
-                box.innerHTML = "";
-            }, 100);
-        });
     }
 
 
