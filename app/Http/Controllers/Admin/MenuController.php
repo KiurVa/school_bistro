@@ -214,9 +214,10 @@ class MenuController extends Controller
                 ->with('error', 'Aktiivsust saab muuta ainult tänase kuupäevaga menüül.');
         }
 
-        Menu::where('is_visible', true)->update(['is_visible' => false]);
-
-        $menu->update(['is_visible' => true]);
+        DB::transaction(function () use ($menu) {
+            Menu::where('is_visible', true)->update(['is_visible' => false]);
+            $menu->update(['is_visible' => true]);
+        });
         ControllersMenuController::clearCache();
 
         return redirect()

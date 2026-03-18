@@ -30,19 +30,19 @@ class BackgroundImageController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'image'    => 'required|image|max:4096', // kuni 4MB
+            'image'    => 'required|image|mimes:jpg,jpeg,png,webp,gif|max:4096', // kuni 4MB
             'is_active'=> 'nullable|boolean',
         ]);
 
         // Laeme pildi public diskile (storage/app/public/backgrounds)
-        $path = $request->file('image')->store('backgrounds', 'public');
+        $path = $validated['image']->store('backgrounds', 'public');
 
         $background = new BackgroundImage();
         $background->file_path = $path;
         $background->is_active = false;
 
         // Kui märgitud "tee aktiivseks"
-        if ($request->boolean('is_active')) {
+        if (!empty($validated['is_active'])) {
             // Paneme kõik varasemad mitteaktiivseks
             BackgroundImage::query()->update(['is_active' => false]);
             $background->is_active = true;

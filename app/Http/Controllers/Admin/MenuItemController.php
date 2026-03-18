@@ -157,6 +157,7 @@ class MenuItemController extends Controller
             'is_available' => 'boolean',
             'order_index' => 'nullable|integer',
             'allergens' => 'array',
+            'allergens.*' => 'exists:allergens,id',
         ], [
             'full_price.max' => 'Täishind ei tohi olla suurem kui 999999.99.',
             'half_price.max' => 'Poolhind ei tohi olla suurem kui 999999.99.',
@@ -200,7 +201,11 @@ class MenuItemController extends Controller
 
     public function search(Request $request)
     {
-        $term = $request->term;
+        $validated = $request->validate([
+            'term' => 'required|string|max:255',
+        ]);
+
+        $term = $validated['term'];
 
         if (strlen($term) < 3) {
             return response()->json([]);
@@ -268,10 +273,13 @@ class MenuItemController extends Controller
 
         $validator = Validator::make($request->all(), [
             'items' => 'array',
+            'items.*' => 'array',
             'items.*.*.id' => 'nullable|integer',
             'items.*.*.name' => 'nullable|string|max:255',
             'items.*.*.full_price' => 'nullable|numeric|max:999999.99',
             'items.*.*.half_price' => 'nullable|numeric|max:999999.99',
+            'items.*.*.allergens' => 'nullable|array',
+            'items.*.*.allergens.*' => 'exists:allergens,id',
         ], [
             'items.*.*.full_price.max' => 'Täishind ei tohi olla suurem kui 999999.99.',
             'items.*.*.half_price.max' => 'Poolhind ei tohi olla suurem kui 999999.99.',
@@ -281,6 +289,17 @@ class MenuItemController extends Controller
             return back()
                 ->withErrors($validator)
                 ->withInput();
+        }
+
+        // Kontrollime, et kõik category_id-d kuuluvad selle menüü tüübile
+        $validCategoryIds = Category::where('menu_type_id', $menu->menu_type_id)
+            ->pluck('id')
+            ->toArray();
+
+        foreach (array_keys($request->input('items', [])) as $categoryId) {
+            if (!in_array((int) $categoryId, $validCategoryIds)) {
+                return back()->with('error', 'Vigane kategooria.')->withInput();
+            }
         }
 
         $existingItems = MenuItem::where('menu_id', $menu->id)
