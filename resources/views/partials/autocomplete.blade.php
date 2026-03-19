@@ -23,7 +23,7 @@
                         let div = document.createElement("div");
                         div.className = "suggestion-item";
                         div.textContent = cap(item.name);
-                        div.onclick = () => { inputEl.value = cap(item.name); box.innerHTML = ""; };
+                        div.addEventListener("mousedown", (e) => { e.preventDefault(); inputEl.value = cap(item.name); box.innerHTML = ""; });
                         box.appendChild(div);
                     });
                 });
