@@ -35,13 +35,13 @@
             <div class="row">
                 <div class="col-md-6 mb-3">
                     <label class="form-label">Täishind (€)</label>
-                    <input type="number" step="0.01" name="full_price" class="form-control"
+                    <input type="text" inputmode="decimal" step="0.01" name="full_price" class="form-control"
                         value="{{ $item->full_price }}">
                 </div>
 
                 <div class="col-md-6 mb-3">
                     <label class="form-label">Poolhind (€)</label>
-                    <input type="number" step="0.01" name="half_price" class="form-control"
+                    <input type="text" inputmode="decimal" step="0.01" name="half_price" class="form-control"
                         value="{{ $item->half_price }}">
                 </div>
             </div>
