@@ -203,6 +203,7 @@ class MenuItemController extends Controller
     {
         $validated = $request->validate([
             'term' => 'required|string|max:255',
+            'category_id' => 'nullable|integer|exists:categories,id',
         ]);
 
         $term = $validated['term'];
@@ -211,8 +212,13 @@ class MenuItemController extends Controller
             return response()->json([]);
         }
 
-        $items = MenuItem::where('name', 'LIKE', '%' . $term . '%')
-            ->orderBy('name')
+        $query = MenuItem::where('name', 'LIKE', '%' . $term . '%');
+
+        if (!empty($validated['category_id'])) {
+            $query->where('category_id', $validated['category_id']);
+        }
+
+        $items = $query->orderBy('name')
             ->limit(10)
             ->distinct()
             ->get(['name']);

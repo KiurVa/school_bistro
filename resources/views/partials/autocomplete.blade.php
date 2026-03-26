@@ -5,7 +5,7 @@
 </style>
 
 <script>
-    function setupAutocomplete(inputEl) {
+    function setupAutocomplete(inputEl, getCategoryId) {
         let box = document.createElement("div");
         box.className = "suggestions-box";
         inputEl.parentNode.appendChild(box);
@@ -14,7 +14,13 @@
             let term = this.value.trim();
             if (term.length < 3) { box.innerHTML = ""; return; }
 
-            fetch(`/menu-item-search?term=` + encodeURIComponent(term))
+            let url = `/menu-item-search?term=` + encodeURIComponent(term);
+            if (getCategoryId) {
+                let catId = getCategoryId(inputEl);
+                if (catId) url += `&category_id=` + encodeURIComponent(catId);
+            }
+
+            fetch(url)
                 .then(res => res.json())
                 .then(data => {
                     box.innerHTML = "";

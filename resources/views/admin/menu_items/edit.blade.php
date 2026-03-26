@@ -105,7 +105,9 @@
 @include('partials.autocomplete')
 
 <script>
-    setupAutocomplete(document.getElementById('nameInput'));
+    setupAutocomplete(document.getElementById('nameInput'), function() {
+        return document.querySelector('select[name="category_id"]').value;
+    });
 </script>
 
 @endsection

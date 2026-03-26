@@ -146,13 +146,18 @@
         container.insertAdjacentHTML('beforeend', html);
 
         const newInput = container.querySelector('.food-row:last-child .food-name-input');
-        setupAutocomplete(newInput);
+        setupAutocomplete(newInput, getCategoryFromInput);
 
         rowCounter++;
     }
 
 
-    document.querySelectorAll(".food-name-input").forEach(setupAutocomplete);
+    function getCategoryFromInput(el) {
+        const match = el.name.match(/^items\[(\d+)\]/);
+        return match ? match[1] : null;
+    }
+
+    document.querySelectorAll(".food-name-input").forEach(el => setupAutocomplete(el, getCategoryFromInput));
     document.getElementById('bulkForm').addEventListener('submit', function(e) {
         // Eemalda eelnevad veaäärised
         document.querySelectorAll('.food-row.is-invalid-row').forEach(row => {
