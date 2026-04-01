@@ -6,9 +6,9 @@
 
 .menu-font {
     font-family: "Patrick Hand", cursive;
-    font-weight: 700;
+    font-weight: 600;
     font-size: 1.4rem;
-    letter-spacing: 0.05em;
+    letter-spacing: 0.04em;
 }
 
 .food-row.is-invalid-row {

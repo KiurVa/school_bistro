@@ -52,7 +52,7 @@
 
         {{-- KUUPÄEV --}}
         <div class="text-center">
-            <h4>{{ now()->format('d.m.Y') }}</h4>
+            <h3>{{ now()->format('d.m.Y') }}</h3>
         </div>
 
         {{-- PÄIS (1-3 rida) --}}
@@ -119,7 +119,7 @@
             @foreach ($category->items as $item)
             <tr class="d-flex">
 
-                <td class="col-8 py-2 ps-2 {{ $item->is_available ? '' : 'blur-item' }}">
+                <td class="col-10 py-2 ps-2 {{ $item->is_available ? '' : 'blur-item' }}">
                     {{ Str::upper($item->name) }}
 
                     {{-- Kuvame kõik allergeenid --}}
@@ -128,7 +128,7 @@
                     @endforeach
                 </td>
 
-                <td class="col-4 py-2 text-end pe-2 {{ $item->is_available ? '' : 'blur-item' }}">
+                <td class="col-2 py-2 text-end pe-2 {{ $item->is_available ? '' : 'blur-item' }}">
 
                     {{-- Kui täishind puudub täielikult → ära kuva midagi --}}
                     @if (is_null($item->full_price))

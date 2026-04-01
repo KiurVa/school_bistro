@@ -19,7 +19,7 @@ class MenuController extends Controller
     public function index()
     {
         $menus = Menu::with('type')
-            ->orderBy('created_at', 'desc')
+            ->orderBy('date', 'desc')
             ->paginate(20); // lehekülgede kaupa
 
         return view('admin.menus.index', compact('menus'));
